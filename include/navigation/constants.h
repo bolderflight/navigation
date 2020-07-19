@@ -5,13 +5,13 @@
 * Copyright (c) 2020 Bolder Flight Systems
 */
 
-#ifndef INCLUDE_NAV_CONSTANTS_H_
-#define INCLUDE_NAV_CONSTANTS_H_
+#ifndef INCLUDE_NAVIGATION_CONSTANTS_H_
+#define INCLUDE_NAVIGATION_CONSTANTS_H_
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
-namespace nav {
+namespace navigation {
 namespace constants {
 /* Semi-major axis, WGS-84 defined m */
 static constexpr double SEMI_MAJOR_AXIS_LENGTH_M = 6378137.0;
@@ -29,6 +29,6 @@ static constexpr double A4 = 2.5 * A2;
 static constexpr double A5 = A1 + A3;
 static constexpr double A6 = 1.0 - E2;
 }  // namespace constants
-}  // namespace nav
+}  // namespace navigation
 
-#endif  //
+#endif  // INCLUDE_NAVIGATION_CONSTANTS_H_

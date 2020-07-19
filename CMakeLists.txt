@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
-project(Nav
+project(Navigation
   VERSION 5.0.0
-  DESCRIPTION "Navigation filters"
+  DESCRIPTION "Navigation filters and utilities"
   LANGUAGES CXX
 )
 # Fetch eigen

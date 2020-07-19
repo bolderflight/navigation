@@ -5,8 +5,8 @@
 * Copyright (c) 2020 Bolder Flight Systems
 */
 
-#include "nav/tranform.h"
-#include "nav/constants.h"
+#include "navigation/transforms.h"
+#include "navigation/constants.h"
 #include <iostream>
 #include <iomanip>
 
@@ -17,9 +17,9 @@ int main() {
   lla(1) = -105.962417 * M_PI / 180.0;
   lla(2) = 4000.0;
 
-  Eigen::Vector3d ecef = nav::lla2ecef(lla);
+  Eigen::Vector3d ecef = navigation::lla2ecef(lla);
 
-  Eigen::Vector3d lla2 = nav::ecef2lla(ecef);
+  Eigen::Vector3d lla2 = navigation::ecef2lla(ecef);
 
   std::cout << std::setprecision(14) << lla2(0) * 180.0 / M_PI << std::endl;
   std::cout << std::setprecision(14) << lla2(1) * 180.0 / M_PI << std::endl;

@@ -5,14 +5,14 @@
 * Copyright (c) 2020 Bolder Flight Systems
 */
 
-#ifndef INCLUDE_NAV_TRANSFORM_H_
-#define INCLUDE_NAV_TRANSFORM_H_
+#ifndef INCLUDE_NAVIGATION_TRANSFORMS_H_
+#define INCLUDE_NAVIGATION_TRANSFORMS_H_
 
-#include "nav/constants.h"
+#include "navigation/constants.h"
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
-namespace nav {
+namespace navigation {
 /* Euler (3-2-1) to Direction Cosine Matrix (DCM) */
 template<typename T>
 Eigen::Matrix<T, 3, 3> angle2dcm(const Eigen::Matrix<T, 3, 1> &eul) {
@@ -26,10 +26,10 @@ Eigen::Matrix<T, 3, 3> angle2dcm(const Eigen::Matrix<T, 3, 1> &eul) {
   T sin_phi = sin(phi);
   T cos_psi = cos(psi);
   T sin_psi = sin(psi);
-  dcm(0, 0) = cos_theta * cos_psi;  
-  dcm(1, 0) = -cos_phi * sin_psi + sin_phi * sin_theta * cos_psi;  
+  dcm(0, 0) = cos_theta * cos_psi;
+  dcm(1, 0) = -cos_phi * sin_psi + sin_phi * sin_theta * cos_psi;
   dcm(2, 0) = sin_phi * sin_psi + cos_phi * sin_theta * cos_psi;
-  dcm(0, 1) = cos_theta * sin_psi;   
+  dcm(0, 1) = cos_theta * sin_psi;
   dcm(1, 1) = cos_phi * cos_psi + sin_phi * sin_theta * sin_psi;
   dcm(2, 1) = -sin_phi * cos_psi + cos_phi * sin_theta * sin_psi;
   dcm(0, 2) = -sin_theta;
@@ -40,7 +40,7 @@ Eigen::Matrix<T, 3, 3> angle2dcm(const Eigen::Matrix<T, 3, 1> &eul) {
 /* Direction Cosine Matrix (DCM) to Euler (3-2-1) */
 template<typename T>
 Eigen::Matrix<T, 3, 1> dcm2angle(const Eigen::Matrix<T, 3, 3> &dcm) {
-	Eigen::Matrix<T, 3, 1> euler;
+  Eigen::Matrix<T, 3, 1> euler;
   euler(0, 0) = atan2(dcm(0, 1), dcm(0, 0));
   euler(1, 0) = -asin(dcm(0, 2));
   euler(2, 0) = atan2(dcm(1, 2), dcm(2, 2));
@@ -49,28 +49,28 @@ Eigen::Matrix<T, 3, 1> dcm2angle(const Eigen::Matrix<T, 3, 3> &dcm) {
 /* Euler (3-2-1) to quaternion */
 template<typename T>
 Eigen::Quaternion<T> angle2quat(const Eigen::Matrix<T, 3, 1> &euler) {
-	T psi = euler(0, 0) / static_cast<T>(2);
+  T psi = euler(0, 0) / static_cast<T>(2);
   T the = euler(1, 0) / static_cast<T>(2);
   T phi = euler(2, 0) / static_cast<T>(2);
   Eigen::Quaternion<T> q;
-	q.w() = cos(psi) * cos(the) * cos(phi) + sin(psi) * sin(the) * sin(phi);  
-	q.x() = cos(psi) * cos(the) * sin(phi) - sin(psi) * sin(the) * cos(phi);
-	q.y() = cos(psi) * sin(the) * cos(phi) + sin(psi) * cos(the) * sin(phi);  
-	q.z() = sin(psi) * cos(the) * cos(phi) - cos(psi) * sin(the) * sin(phi);
+  q.w() = cos(psi) * cos(the) * cos(phi) + sin(psi) * sin(the) * sin(phi);
+  q.x() = cos(psi) * cos(the) * sin(phi) - sin(psi) * sin(the) * cos(phi);
+  q.y() = cos(psi) * sin(the) * cos(phi) + sin(psi) * cos(the) * sin(phi);
+  q.z() = sin(psi) * cos(the) * cos(phi) - cos(psi) * sin(the) * sin(phi);
   return q;
 }
 /* Quaternion to Euler (3-2-1) */
 template<typename T>
 Eigen::Matrix<T, 3, 1> quat2angle(const Eigen::Quaternion<T> &q) {
-	T m11 = static_cast<T>(2) * q.w() * q.w() + static_cast<T>(2) * q.x() * q.x() - static_cast<T>(1);
-	T m12 = static_cast<T>(2) * q.x() * q.y() + static_cast<T>(2) * q.w() * q.z();
-	T m13 = static_cast<T>(2) * q.x() * q.z() - static_cast<T>(2) * q.w() * q.y();
-	T m23 = static_cast<T>(2) * q.y() * q.z() + static_cast<T>(2) * q.w() * q.x();
-	T m33 = static_cast<T>(2) * q.w() * q.w() + static_cast<T>(2) * q.z() * q.z() - static_cast<T>(1);
+  T m11 = static_cast<T>(2) * q.w() * q.w() + static_cast<T>(2) * q.x() * q.x() - static_cast<T>(1);
+  T m12 = static_cast<T>(2) * q.x() * q.y() + static_cast<T>(2) * q.w() * q.z();
+  T m13 = static_cast<T>(2) * q.x() * q.z() - static_cast<T>(2) * q.w() * q.y();
+  T m23 = static_cast<T>(2) * q.y() * q.z() + static_cast<T>(2) * q.w() * q.x();
+  T m33 = static_cast<T>(2) * q.w() * q.w() + static_cast<T>(2) * q.z() * q.z() - static_cast<T>(1);
   Eigen::Matrix<T, 3, 1> euler;
-	euler(0, 0) = atan2(m12, m11);
-	euler(1, 0) = asin(-m13);
-	euler(2, 0) = atan2(m23, m33);
+  euler(0, 0) = atan2(m12, m11);
+  euler(1, 0) = asin(-m13);
+  euler(2, 0) = atan2(m23, m33);
   return euler;
 }
 /* DCM to Quaternion */
@@ -87,7 +87,7 @@ Eigen::Quaternion<T> dcm2quat(const Eigen::Matrix<T, 3, 3> &dcm) {
 template<typename T>
 Eigen::Matrix<T, 3, 3> quat2dcm(const Eigen::Quaternion<T> &q) {
   Eigen::Matrix<T, 3, 3> dcm;
-	dcm(0, 0) = static_cast<T>(2) * q.w() * q.w() - static_cast<T>(1) + static_cast<T>(2) * q.x() * q.x();
+  dcm(0, 0) = static_cast<T>(2) * q.w() * q.w() - static_cast<T>(1) + static_cast<T>(2) * q.x() * q.x();
   dcm(1, 0) = static_cast<T>(2) * q.x() * q.y() - static_cast<T>(2) * q.w() * q.z();
   dcm(2, 0) = static_cast<T>(2) * q.x() * q.z() + static_cast<T>(2) * q.w() * q.y();
   dcm(0, 1) = static_cast<T>(2) * q.x() * q.y() + static_cast<T>(2) * q.w() * q.z();
@@ -95,7 +95,7 @@ Eigen::Matrix<T, 3, 3> quat2dcm(const Eigen::Quaternion<T> &q) {
   dcm(2, 1) = static_cast<T>(2) * q.y() * q.z() - static_cast<T>(2) * q.w() * q.x();
   dcm(0, 2) = static_cast<T>(2) * q.x() * q.z() - static_cast<T>(2) * q.w() * q.y();
   dcm(1, 2) = static_cast<T>(2) * q.y() * q.z() + static_cast<T>(2) * q.w() * q.x();
-	dcm(2, 2) = static_cast<T>(2) * q.w() * q.w() - static_cast<T>(1) + static_cast<T>(2) * q.z() * q.z();
+  dcm(2, 2) = static_cast<T>(2) * q.w() * q.w() - static_cast<T>(1) + static_cast<T>(2) * q.z() * q.z();
   return dcm;
 }
 /* LLA to ECEF */
@@ -194,12 +194,12 @@ Eigen::Vector3d lla2ned(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref) 
   return ecef2ned(ecef_loc - ecef_ref, ref);
 }
 /* NED to LLA */
-Eigen::Vector3d lla2ned(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref) {
+Eigen::Vector3d ned2lla(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref) {
   Eigen::Vector3d ecef = ned2ecef(loc, ref);
   Eigen::Vector3d ecef_ref = lla2ecef(ref);
   ecef += ecef_ref;
   return ecef2lla(ecef);
 }
-}  // namespace nav
+}  // namespace navigation
 
-#endif  // INCLUDE_NAV_TRANSFORM_H_
+#endif  // INCLUDE_NAVIGATION_TRANSFORMS_H_

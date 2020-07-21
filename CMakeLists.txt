@@ -13,11 +13,23 @@ FetchContent_Declare(
 	GIT_TAG					v1.0.0
 )
 FetchContent_MakeAvailable(eigen)
+FetchContent_Declare(
+	types
+	GIT_REPOSITORY 	git@gitlab.com:bolderflight/software/types.git
+)
+FetchContent_MakeAvailable(types)
+FetchContent_Declare(
+	global_defs
+	GIT_REPOSITORY 	git@gitlab.com:bolderflight/software/global_defs.git
+)
+FetchContent_MakeAvailable(global_defs)
 # Add the library target
 add_library(nav INTERFACE)
 target_link_libraries(nav
 	INTERFACE
 		eigen
+		types
+		global_defs
 )
 # Setup include directories 
 target_include_directories(nav INTERFACE include/)

@@ -7,23 +7,27 @@
 
 #include "navigation/transforms.h"
 #include "navigation/constants.h"
+#include "navigation/ekf_15_state.h"
 #include <iostream>
 #include <iomanip>
 
 int main() {
 
-  Eigen::Vector3d lla;
-  lla(0) = 35.679862 * M_PI / 180.0;
-  lla(1) = -105.962417 * M_PI / 180.0;
-  lla(2) = 4000.0;
+  navigation::Ekf15State ekf;
+  types::Imu<types::Accel3D<float>, types::Gyro3D<float>> imu;
+  ekf.TimeUpdate(imu);
+  // Eigen::Vector3d lla;
+  // lla(0) = 35.679862 * M_PI / 180.0;
+  // lla(1) = -105.962417 * M_PI / 180.0;
+  // lla(2) = 4000.0;
 
-  Eigen::Vector3d ecef = navigation::lla2ecef(lla);
+  // Eigen::Vector3d ecef = navigation::lla2ecef(lla);
 
-  Eigen::Vector3d lla2 = navigation::ecef2lla(ecef);
+  // Eigen::Vector3d lla2 = navigation::ecef2lla(ecef);
 
-  std::cout << std::setprecision(14) << lla2(0) * 180.0 / M_PI << std::endl;
-  std::cout << std::setprecision(14) << lla2(1) * 180.0 / M_PI << std::endl;
-  std::cout << std::setprecision(14) << lla2(2) << std::endl;
+  // std::cout << std::setprecision(14) << lla2(0) * 180.0 / M_PI << std::endl;
+  // std::cout << std::setprecision(14) << lla2(1) * 180.0 / M_PI << std::endl;
+  // std::cout << std::setprecision(14) << lla2(2) << std::endl;
 
   // std::cout << nav::constants::ECC2 << std::endl;
 

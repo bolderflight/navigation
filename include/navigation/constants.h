@@ -8,9 +8,6 @@
 #ifndef INCLUDE_NAVIGATION_CONSTANTS_H_
 #define INCLUDE_NAVIGATION_CONSTANTS_H_
 
-#include "Eigen/Core"
-#include "Eigen/Dense"
-
 namespace navigation {
 namespace constants {
 /* Semi-major axis, WGS-84 defined m */

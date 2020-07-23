@@ -14,8 +14,8 @@
 int main() {
 
   navigation::Ekf15State ekf;
-  types::Imu<types::Accel3D<float>, types::Gyro3D<float>> imu;
-  ekf.TimeUpdate(imu);
+  types::Imuf imu;
+  ekf.TimeUpdate(imu, 20);
   // Eigen::Vector3d lla;
   // lla(0) = 35.679862 * M_PI / 180.0;
   // lla(1) = -105.962417 * M_PI / 180.0;

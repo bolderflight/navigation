@@ -179,7 +179,6 @@ class Ekf15State {
     ins_.gyro.radps(ins_.gyro.radps() - x_.segment(12, 3));
     return ins_;
   }
- private:
   /*
   * Sensor characteristics - accel and gyro are modeled with a
   * Gauss-Markov model.

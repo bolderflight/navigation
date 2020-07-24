@@ -55,9 +55,9 @@ class Ekf15State {
   inline float init_heading_err_std_rad() {return init_heading_err_std_rad_;}
   inline float init_accel_bias_std_mps2() {return init_accel_bias_std_mps2_;}
   inline float init_gyro_bias_std_radps() {return init_gyro_bias_std_radps_;}
-  /* Configure the EKF */
-  void Configure() {
-    /* Observation matrix */
+  /* Initialize the EKF states */
+  void Initialize(const types::Imuf &imu, const types::Mag3f &mag, const types::Gnssf &gnss) {
+      /* Observation matrix */
     h_.block(0, 0, 5, 5) = Eigen::Matrix<float, 5, 5>::Identity();
     /* Process noise covariance */
     rw_.block(0, 0, 3, 3) = accel_std_mps2_ * accel_std_mps2_ * Eigen::Matrix<float, 3, 3>::Identity();
@@ -79,9 +79,6 @@ class Ekf15State {
     /* Markov bias matrices */
     accel_markov_bias_ = -1.0f / accel_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
     gyro_markov_bias_ = -1.0f / gyro_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
-  }
-  /* Initialize the EKF states */
-  void Initialize(const types::Imuf &imu, const types::Mag3f &mag, const types::Gnssf &gnss) {
     /* Initialize position and velocity */
     ins_.lla_pos = gnss.lla_pos;
     ins_.ned_vel = gnss.ned_vel;
@@ -179,6 +176,8 @@ class Ekf15State {
     ins_.gyro.radps(ins_.gyro.radps() - x_.segment(12, 3));
     return ins_;
   }
+
+ private:
   /*
   * Sensor characteristics - accel and gyro are modeled with a
   * Gauss-Markov model.

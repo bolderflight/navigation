@@ -57,7 +57,7 @@ class Ekf15State {
   inline float init_gyro_bias_std_radps() {return init_gyro_bias_std_radps_;}
   /* Initialize the EKF states */
   void Initialize(const types::Imuf &imu, const types::Mag3f &mag, const types::Gnssf &gnss) {
-      /* Observation matrix */
+    /* Observation matrix */
     h_.block(0, 0, 5, 5) = Eigen::Matrix<float, 5, 5>::Identity();
     /* Process noise covariance */
     rw_.block(0, 0, 3, 3) = accel_std_mps2_ * accel_std_mps2_ * Eigen::Matrix<float, 3, 3>::Identity();

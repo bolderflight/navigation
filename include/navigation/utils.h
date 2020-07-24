@@ -17,7 +17,7 @@ Eigen::Vector3f LlaRate(const Eigen::Vector3f &ned_vel, const Eigen::Vector3d &l
   Eigen::Vector3f lla_dot;
   double lat = lla(0);
   double alt = lla(2);
-  double denom = abs(1 - (constants::E2 * sin(lat) * sin(lat)));
+  double denom = fabs(1 - (constants::E2 * sin(lat) * sin(lat)));
   double sqrt_denom = denom;
   double Rns = constants::SEMI_MAJOR_AXIS_LENGTH_M * (1 - constants::E2) / (denom * sqrt_denom); 
   double Rew = constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;

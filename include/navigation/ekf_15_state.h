@@ -155,7 +155,7 @@ class Ekf15State {
     /* State update, x = K * y */
     x_ = k_ * y_;
     /* Position update */
-    double denom = abs(1 - (constants::E2 * sin(ins_.lla_pos.lat.rad()) * sin(ins_.lla_pos.lat.rad())));
+    double denom = fabs(1.0 - (constants::E2 * sin(ins_.lla_pos.lat.rad()) * sin(ins_.lla_pos.lat.rad())));
     double sqrt_denom = denom;
     double Rns = constants::SEMI_MAJOR_AXIS_LENGTH_M * (1 - constants::E2) / (denom * sqrt_denom); 
     double Rew = constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;

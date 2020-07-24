@@ -106,7 +106,7 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla) {
   double cos_lon = cos(lla(1));
   double sin_lon = sin(lla(1));
   double alt = lla(2);
-  double Rn = navigation::constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt(abs(1.0 - (navigation::constants::E2 * sin_lat * sin_lat)));
+  double Rn = navigation::constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt(fabs(1.0 - (navigation::constants::E2 * sin_lat * sin_lat)));
   ecef(0) = (Rn + alt) * cos_lat * cos_lon;
   ecef(1) = (Rn + alt) * cos_lat * sin_lon;
   ecef(2) = (Rn * (1.0 - navigation::constants::E2) + alt) * sin_lat;
@@ -119,7 +119,7 @@ Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef) {
   x = ecef(0);
   y = ecef(1);
   z = ecef(2);
-  zp = abs(z);
+  zp = fabs(z);
   w2 = x * x + y * y;
   w = sqrt(w2);
   z2 = z * z;

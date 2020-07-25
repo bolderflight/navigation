@@ -20,12 +20,12 @@ Eigen::Matrix<T, 3, 3> angle2dcm(const Eigen::Matrix<T, 3, 1> &eul) {
   T psi = eul(0, 0);
   T theta = eul(1, 0);
   T phi = eul(2, 0);
-  T cos_theta = cos(theta);
-  T sin_theta = sin(theta);
-  T cos_phi = cos(phi);
-  T sin_phi = sin(phi);
-  T cos_psi = cos(psi);
-  T sin_psi = sin(psi);
+  T cos_theta = std::cos(theta);
+  T sin_theta = std::sin(theta);
+  T cos_phi = std::cos(phi);
+  T sin_phi = std::sin(phi);
+  T cos_psi = std::cos(psi);
+  T sin_psi = std::sin(psi);
   dcm(0, 0) = cos_theta * cos_psi;
   dcm(1, 0) = -cos_phi * sin_psi + sin_phi * sin_theta * cos_psi;
   dcm(2, 0) = sin_phi * sin_psi + cos_phi * sin_theta * cos_psi;
@@ -41,9 +41,9 @@ Eigen::Matrix<T, 3, 3> angle2dcm(const Eigen::Matrix<T, 3, 1> &eul) {
 template<typename T>
 Eigen::Matrix<T, 3, 1> dcm2angle(const Eigen::Matrix<T, 3, 3> &dcm) {
   Eigen::Matrix<T, 3, 1> euler;
-  euler(0, 0) = atan2(dcm(0, 1), dcm(0, 0));
-  euler(1, 0) = -asin(dcm(0, 2));
-  euler(2, 0) = atan2(dcm(1, 2), dcm(2, 2));
+  euler(0, 0) = std::atan2(dcm(0, 1), dcm(0, 0));
+  euler(1, 0) = -std::asin(dcm(0, 2));
+  euler(2, 0) = std::atan2(dcm(1, 2), dcm(2, 2));
   return euler;
 }
 /* Euler (3-2-1) to quaternion */
@@ -53,10 +53,10 @@ Eigen::Quaternion<T> angle2quat(const Eigen::Matrix<T, 3, 1> &euler) {
   T the = euler(1, 0) / static_cast<T>(2);
   T phi = euler(2, 0) / static_cast<T>(2);
   Eigen::Quaternion<T> q;
-  q.w() = cos(psi) * cos(the) * cos(phi) + sin(psi) * sin(the) * sin(phi);
-  q.x() = cos(psi) * cos(the) * sin(phi) - sin(psi) * sin(the) * cos(phi);
-  q.y() = cos(psi) * sin(the) * cos(phi) + sin(psi) * cos(the) * sin(phi);
-  q.z() = sin(psi) * cos(the) * cos(phi) - cos(psi) * sin(the) * sin(phi);
+  q.w() = std::cos(psi) * std::cos(the) * std::cos(phi) + std::sin(psi) * std::sin(the) * std::sin(phi);
+  q.x() = std::cos(psi) * std::cos(the) * std::sin(phi) - std::sin(psi) * std::sin(the) * std::cos(phi);
+  q.y() = std::cos(psi) * std::sin(the) * std::cos(phi) + std::sin(psi) * std::cos(the) * std::sin(phi);
+  q.z() = std::sin(psi) * std::cos(the) * std::cos(phi) - std::cos(psi) * std::sin(the) * std::sin(phi);
   return q;
 }
 /* Quaternion to Euler (3-2-1) */
@@ -77,7 +77,7 @@ Eigen::Matrix<T, 3, 1> quat2angle(const Eigen::Quaternion<T> &q) {
 template<typename T>
 Eigen::Quaternion<T> dcm2quat(const Eigen::Matrix<T, 3, 3> &dcm) {
   Eigen::Quaternion<T> q;
-  q.w() = static_cast<T>(0.5) * sqrt(static_cast<T>(1) + dcm(0, 0) + dcm(1, 1) + dcm(2, 2));
+  q.w() = static_cast<T>(0.5) * std::sqrt(static_cast<T>(1) + dcm(0, 0) + dcm(1, 1) + dcm(2, 2));
   q.x() = (dcm(1, 2) - dcm(2, 1)) / (static_cast<T>(4) * q.w());
   q.y() = (dcm(2, 0) - dcm(0, 2)) / (static_cast<T>(4) * q.w());
   q.z() = (dcm(0, 1) - dcm(1, 0)) / (static_cast<T>(4) * q.w());

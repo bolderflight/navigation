@@ -56,7 +56,7 @@ class Ekf15State {
   inline float init_accel_bias_std_mps2() {return init_accel_bias_std_mps2_;}
   inline float init_gyro_bias_std_radps() {return init_gyro_bias_std_radps_;}
   /* Initialize the EKF states */
-  void Initialize(const types::Imuf &imu, const types::Mag3f &mag, const types::Gnssf &gnss) {
+  void Initialize(const types::Imu &imu, const types::Mag3D &mag, const types::Gnss &gnss) {
     /* Observation matrix */
     h_.block(0, 0, 5, 5) = Eigen::Matrix<float, 5, 5>::Identity();
     /* Process noise covariance */
@@ -80,7 +80,7 @@ class Ekf15State {
     accel_markov_bias_ = -1.0f / accel_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
     gyro_markov_bias_ = -1.0f / gyro_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
     /* Initialize position and velocity */
-    ins_.lla_pos = gnss.lla_pos;
+    ins_.lla = gnss.lla;
     ins_.ned_vel = gnss.ned_vel;
     /* Initialize sensor biases */
     gyro_bias_radps_ = imu.gyro.radps();
@@ -93,7 +93,7 @@ class Ekf15State {
     quat_ = angle2quat(ins_.attitude.rad());
   }
   /* Perform a time update */
-  types::Insf TimeUpdate(const types::Imuf &imu, const float dt_s) {
+  types::Ins TimeUpdate(const types::Imu &imu, const float dt_s) {
     /* A-priori accel and rotation rate estimate */
     ins_.accel.mps2(imu.accel.mps2() - accel_bias_mps2_);
     ins_.gyro.radps(imu.gyro.radps() - gyro_bias_radps_);
@@ -113,7 +113,7 @@ class Ekf15State {
     /* Velocity update */
     ins_.ned_vel.mps(ins_.ned_vel.mps() + dt_s * (t_b2ned * ins_.accel.mps2() + GRAV_NED_MPS2_));
     /* Position update */
-    ins_.lla_pos.rad_m(ins_.lla_pos.rad_m() + (dt_s * LlaRate(ins_.ned_vel.mps(), ins_.lla_pos.rad_m())).cast<double>());
+    ins_.lla.rad_m(ins_.lla.rad_m() + (dt_s * LlaRate(ins_.ned_vel.mps(), ins_.lla.rad_m())).cast<double>());
     /* Jacobian */
     fs_.block(0, 3, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
     fs_(5,2) = -2.0f * global::constants::G_MPS2<float> / constants::SEMI_MAJOR_AXIS_LENGTH_M;
@@ -139,9 +139,9 @@ class Ekf15State {
     return ins_;
   }
   /* Perform a measurement update */
-  types::Insf MeasurementUpdate(types::Gnssf &gnss) {
+  types::Ins MeasurementUpdate(types::Gnss &gnss) {
     /* Y, error between Measures and Outputs */
-    y_.segment(0, 3) = lla2ned(gnss.lla_pos.rad_m(), ins_.lla_pos.rad_m()).cast<float>();
+    y_.segment(0, 3) = lla2ned(gnss.lla.rad_m(), ins_.lla.rad_m()).cast<float>();
     y_.segment(3, 3) = gnss.ned_vel.mps() - ins_.ned_vel.mps();
     /* Innovation covariance */
     s_ = h_ * p_ * h_.transpose() + r_;
@@ -152,13 +152,13 @@ class Ekf15State {
     /* State update, x = K * y */
     x_ = k_ * y_;
     /* Position update */
-    double denom = fabs(1.0 - (constants::E2 * sin(ins_.lla_pos.lat.rad()) * sin(ins_.lla_pos.lat.rad())));
+    double denom = fabs(1.0 - (constants::E2 * sin(ins_.lla.lat.rad()) * sin(ins_.lla.lat.rad())));
     double sqrt_denom = denom;
     double Rns = constants::SEMI_MAJOR_AXIS_LENGTH_M * (1 - constants::E2) / (denom * sqrt_denom); 
     double Rew = constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;
-    ins_.lla_pos.alt.m(ins_.lla_pos.alt.m() - x_(2));
-    ins_.lla_pos.lat.rad(ins_.lla_pos.lat.rad() + x_(0) / (Rew + ins_.lla_pos.alt.m()));
-    ins_.lla_pos.lon.rad(ins_.lla_pos.lon.rad() + x_(1) / (Rns + ins_.lla_pos.alt.m()) / cos(ins_.lla_pos.lat.rad()));
+    ins_.lla.alt.m(ins_.lla.alt.m() - x_(2));
+    ins_.lla.lat.rad(ins_.lla.lat.rad() + x_(0) / (Rew + ins_.lla.alt.m()));
+    ins_.lla.lon.rad(ins_.lla.lon.rad() + x_(1) / (Rns + ins_.lla.alt.m()) / cos(ins_.lla.lat.rad()));
     /* Velocity update */
     ins_.ned_vel.mps(ins_.ned_vel.mps() + x_.segment(3, 3));
     /* Attitude correction */
@@ -271,7 +271,7 @@ class Ekf15State {
   /*
   * Data
   */
-  types::Insf ins_;
+  types::Ins ins_;
 };
 
 }  // namespace navigation

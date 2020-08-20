@@ -14,7 +14,7 @@
 int main() {
 
   navigation::Ekf15State ekf;
-  types::Imuf imu;
+  types::Imu imu;
   ekf.TimeUpdate(imu, 20);
   // Eigen::Vector3d lla;
   // lla(0) = 35.679862 * M_PI / 180.0;

@@ -1,2 +1,2 @@
-# nav-ins
+# navigation
 

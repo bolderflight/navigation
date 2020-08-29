@@ -8,11 +8,9 @@
 #ifndef INCLUDE_NAVIGATION_EKF_15_STATE_H_
 #define INCLUDE_NAVIGATION_EKF_15_STATE_H_
 
-#include "types/types.h"
-#include "navigation/utils.h"
-#include "navigation/transforms.h"
-#include "navigation/tilt_compass.h"
 #include "global_defs/global_defs.h"
+#include "Eigen/Core"
+#include "Eigen/Dense"
 
 namespace navigation {
 
@@ -56,126 +54,23 @@ class Ekf15State {
   inline float init_accel_bias_std_mps2() {return init_accel_bias_std_mps2_;}
   inline float init_gyro_bias_std_radps() {return init_gyro_bias_std_radps_;}
   /* Initialize the EKF states */
-  void Initialize(const types::Imu &imu, const types::Mag3D &mag, const types::Gnss &gnss) {
-    /* Observation matrix */
-    h_.block(0, 0, 5, 5) = Eigen::Matrix<float, 5, 5>::Identity();
-    /* Process noise covariance */
-    rw_.block(0, 0, 3, 3) = accel_std_mps2_ * accel_std_mps2_ * Eigen::Matrix<float, 3, 3>::Identity();
-    rw_.block(3, 3, 3, 3) = gyro_std_radps_ * gyro_std_radps_ * Eigen::Matrix<float, 3, 3>::Identity();
-    rw_.block(6, 6, 3, 3) = 2.0f * accel_markov_bias_std_mps2_ * accel_markov_bias_std_mps2_ / accel_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
-    rw_.block(9, 9, 3, 3) = 2.0f * gyro_markov_bias_std_radps_ * gyro_markov_bias_std_radps_ / gyro_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
-    /* Observation noise covariance */
-    r_.block(0, 0, 2, 2) = gnss_pos_ne_std_m_ * gnss_pos_ne_std_m_ * Eigen::Matrix<float, 2, 2>::Identity();
-    r_(2, 2) = gnss_pos_d_std_m_ * gnss_pos_d_std_m_;
-    r_.block(3, 3, 2, 2) = gnss_vel_ne_std_mps_ * gnss_vel_ne_std_mps_ * Eigen::Matrix<float, 2, 2>::Identity();
-    r_(5, 5) = gnss_vel_d_std_mps_ * gnss_vel_d_std_mps_;
-    /* Initial covariance estimate */
-    p_.block(0, 0, 3, 3) = init_pos_err_std_m_ * init_pos_err_std_m_ * Eigen::Matrix<float, 3, 3>::Identity();
-    p_.block(3, 3, 3, 3) = init_vel_err_std_mps_ * init_vel_err_std_mps_ * Eigen::Matrix<float, 3, 3>::Identity();
-    p_.block(6, 6, 2, 2) = init_att_err_std_rad_ * init_att_err_std_rad_ * Eigen::Matrix<float, 2, 2>::Identity();
-    p_(8, 8) = init_heading_err_std_rad_ * init_heading_err_std_rad_;
-    p_.block(9, 9, 3, 3) = init_accel_bias_std_mps2_ * init_accel_bias_std_mps2_ * Eigen::Matrix<float, 3, 3>::Identity();
-    p_.block(12, 12, 3, 3) = init_gyro_bias_std_radps_ * init_gyro_bias_std_radps_ * Eigen::Matrix<float, 3, 3>::Identity();
-    /* Markov bias matrices */
-    accel_markov_bias_ = -1.0f / accel_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
-    gyro_markov_bias_ = -1.0f / gyro_tau_s_ * Eigen::Matrix<float, 3, 3>::Identity();
-    /* Initialize position and velocity */
-    ins_.lla = gnss.lla;
-    ins_.ned_vel = gnss.ned_vel;
-    /* Initialize sensor biases */
-    gyro_bias_radps_ = imu.gyro.radps();
-    /* New accelerations and rotation rates */
-    ins_.gyro.radps(imu.gyro.radps() - gyro_bias_radps_);
-    ins_.accel.mps2(imu.accel.mps2() - accel_bias_mps2_);
-    /* Initialize pitch, roll, and heading */
-    ins_.attitude.rad(TiltCompass(imu.accel.mps2(), mag.ut()));
-    /* Euler to quaternion */
-    quat_ = angle2quat(ins_.attitude.rad());
-  }
+  void Initialize(const Eigen::Vector3f &accel, const Eigen::Vector3f &gyro, const Eigen::Vector3f &mag, const Eigen::Vector3f &ned_vel, const Eigen::Vector3d &lla);
   /* Perform a time update */
-  types::Ins TimeUpdate(const types::Imu &imu, const float dt_s) {
-    /* A-priori accel and rotation rate estimate */
-    ins_.accel.mps2(imu.accel.mps2() - accel_bias_mps2_);
-    ins_.gyro.radps(imu.gyro.radps() - gyro_bias_radps_);
-    /* Attitude update */
-    delta_quat_.w() = 1.0f;
-    delta_quat_.x() = 0.5f * ins_.gyro.radps()(0) * dt_s;
-    delta_quat_.y() = 0.5f * ins_.gyro.radps()(1) * dt_s;
-    delta_quat_.z() = 0.5f * ins_.gyro.radps()(2) * dt_s;
-    quat_ = (quat_ * delta_quat_).normalized();
-    /* Avoid quaternion sign flips */
-    if (quat_.w() < 0) {
-      quat_ = Eigen::Quaternionf(-quat_.w(), -quat_.x(), -quat_.y(), -quat_.z());
-    }
-    ins_.attitude.rad(quat2angle(quat_));
-    /* Body to NED transformation from quat */
-    t_b2ned = quat2dcm(quat_).transpose();
-    /* Velocity update */
-    ins_.ned_vel.mps(ins_.ned_vel.mps() + dt_s * (t_b2ned * ins_.accel.mps2() + GRAV_NED_MPS2_));
-    /* Position update */
-    ins_.lla.rad_m(ins_.lla.rad_m() + (dt_s * LlaRate(ins_.ned_vel.mps(), ins_.lla.rad_m())).cast<double>());
-    /* Jacobian */
-    fs_.block(0, 3, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
-    fs_(5,2) = -2.0f * global::constants::G_MPS2<float> / constants::SEMI_MAJOR_AXIS_LENGTH_M;
-    fs_.block(3, 6, 3, 3) = -2.0f * t_b2ned * Skew(ins_.accel.mps2());
-    fs_.block(3, 9, 3, 3) = -t_b2ned;
-    fs_.block(6, 6, 3, 3) = -Skew(ins_.gyro.radps());
-    fs_.block(6, 12, 3, 3) = -0.5f * Eigen::Matrix<float, 3, 3>::Identity();
-    fs_.block(9, 9, 3, 3) = accel_markov_bias_; // ... Accel Markov Bias
-    fs_.block(12, 12, 3, 3) = gyro_markov_bias_; // ... Rotation Rate Markov Bias
-    /* State transition matrix */
-    phi_ = Eigen::Matrix<float, 15, 15>::Identity() + fs_ * dt_s;
-    /* Process Noise Covariance (Discrete approximation) */
-    gs_.block(3, 0, 3, 3) = -t_b2ned;
-    gs_.block(6, 3, 3, 3) = -0.5f * Eigen::Matrix<float, 3, 3>::Identity();
-    gs_.block(9, 6, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
-    gs_.block(12, 9, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
-    /* Discrete Process Noise */
-    q_ = phi_ * dt_s * gs_ * rw_ * gs_.transpose();
-    q_ = 0.5f * (q_ + q_.transpose());
-    /* Covariance Time Update */
-    p_ = phi_ * p_ * phi_.transpose() + q_;
-    p_ = 0.5f * (p_ + p_.transpose());
-    return ins_;
-  }
+  void TimeUpdate(const Eigen::Vector3f &accel, const Eigen::Vector3f &gyro , const float dt_s);
   /* Perform a measurement update */
-  types::Ins MeasurementUpdate(types::Gnss &gnss) {
-    /* Y, error between Measures and Outputs */
-    y_.segment(0, 3) = lla2ned(gnss.lla.rad_m(), ins_.lla.rad_m()).cast<float>();
-    y_.segment(3, 3) = gnss.ned_vel.mps() - ins_.ned_vel.mps();
-    /* Innovation covariance */
-    s_ = h_ * p_ * h_.transpose() + r_;
-    /* Kalman gain */
-    k_ = p_ * h_.transpose() * s_.inverse();
-    /* Covariance update, P = (I + K * H) * P * (I + K * H)' + K * R * K' */
-    p_ = (Eigen::Matrix<float, 15, 15>::Identity() - k_ * h_) * p_ * (Eigen::Matrix<float, 15, 15>::Identity() - k_ * h_).transpose() + k_ * r_ * k_.transpose();
-    /* State update, x = K * y */
-    x_ = k_ * y_;
-    /* Position update */
-    double denom = fabs(1.0 - (constants::E2 * sin(ins_.lla.lat.rad()) * sin(ins_.lla.lat.rad())));
-    double sqrt_denom = denom;
-    double Rns = constants::SEMI_MAJOR_AXIS_LENGTH_M * (1 - constants::E2) / (denom * sqrt_denom); 
-    double Rew = constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;
-    ins_.lla.alt.m(ins_.lla.alt.m() - x_(2));
-    ins_.lla.lat.rad(ins_.lla.lat.rad() + x_(0) / (Rew + ins_.lla.alt.m()));
-    ins_.lla.lon.rad(ins_.lla.lon.rad() + x_(1) / (Rns + ins_.lla.alt.m()) / cos(ins_.lla.lat.rad()));
-    /* Velocity update */
-    ins_.ned_vel.mps(ins_.ned_vel.mps() + x_.segment(3, 3));
-    /* Attitude correction */
-    delta_quat_.w() = 1.0f;
-    delta_quat_.x() = x_(6);
-    delta_quat_.y() = x_(7);
-    delta_quat_.z() = x_(8);
-    quat_ = (quat_ * delta_quat_).normalized();
-    ins_.attitude.rad(quat2angle(quat_));
-    /* Update biases from states */
-    accel_bias_mps2_ += x_.segment(9, 3);
-    gyro_bias_radps_ += x_.segment(12, 3);
-    /* Update accelerometer and gyro */
-    ins_.accel.mps2(ins_.accel.mps2() - x_.segment(9, 3));
-    ins_.gyro.radps(ins_.gyro.radps() - x_.segment(12, 3));
-    return ins_;
-  }
+  void MeasurementUpdate(const Eigen::Vector3f &ned_vel, const Eigen::Vector3d &lla);
+  /* EKF data */
+  inline Eigen::Vector3f accel_bias_mps2() {return accel_bias_mps2_;}
+  inline Eigen::Vector3f gyro_bias_radps() {return gyro_bias_radps_;}
+  inline Eigen::Vector3f accel_mps2() {return ins_accel_mps2_;}
+  inline Eigen::Vector3f gyro_radps() {return ins_gyro_radps_;}
+  inline Eigen::Vector3f ned_vel_mps() {return ins_ned_vel_mps_;}
+  inline float yaw_rad() {return ins_ypr_rad_(0);}
+  inline float pitch_rad() {return ins_ypr_rad_(1);}
+  inline float roll_rad() {return ins_ypr_rad_(2);}
+  inline double lat_rad() {return ins_lla_rad_m_(0);}
+  inline double lon_rad() {return ins_lla_rad_m_(1);}
+  inline double alt_m() {return ins_lla_rad_m_(2);}
 
  private:
   /*
@@ -229,7 +124,7 @@ class Ekf15State {
   /* Covariance of the Sensor Noise */
   Eigen::Matrix<float, 12, 12> rw_ = Eigen::Matrix<float, 12, 12>::Zero();
   /* Process Noise Covariance (Discrete approximation) */
-  Eigen::Matrix<float,15,12> gs_ = Eigen::Matrix<float, 15, 12>::Zero();
+  Eigen::Matrix<float, 15, 12> gs_ = Eigen::Matrix<float, 15, 12>::Zero();
   /* Innovation covariance */
   Eigen::Matrix<float, 6, 6> s_ = Eigen::Matrix<float, 6, 6>::Zero();
   /* Covariance estimate */
@@ -241,7 +136,7 @@ class Ekf15State {
   /* Jacobian (state update matrix) */
   Eigen::Matrix<float, 15, 15> fs_ = Eigen::Matrix<float, 15, 15>::Zero();
   /* State transition */
-  Eigen::Matrix<float,15,15> phi_ = Eigen::Matrix<float, 15, 15>::Zero();
+  Eigen::Matrix<float, 15, 15> phi_ = Eigen::Matrix<float, 15, 15>::Zero();
   /* Error between measures and outputs */
   Eigen::Matrix<float, 6, 1> y_ = Eigen::Matrix<float, 6, 1>::Zero();
   /* State matrix */
@@ -271,7 +166,13 @@ class Ekf15State {
   /*
   * Data
   */
-  types::Ins ins_;
+  Eigen::Vector3f ins_accel_mps2_;
+  Eigen::Vector3f ins_gyro_radps_;
+  Eigen::Vector3f ins_ypr_rad_;
+  Eigen::Vector3f ins_ned_vel_mps_;
+  Eigen::Vector3d ins_lla_rad_m_;
+
+  // types::Ins ins_;
 };
 
 }  // namespace navigation

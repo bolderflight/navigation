@@ -1,38 +1,47 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Navigation
-  VERSION 5.0.0
+  VERSION 1.0.0
   DESCRIPTION "Navigation filters and utilities"
   LANGUAGES CXX
 )
-# Fetch eigen
 include(FetchContent)
+# Fetch eigen
 FetchContent_Declare(
 	eigen
 	GIT_REPOSITORY 	git@gitlab.com:bolderflight/software/eigen.git
 	GIT_TAG					v1.0.0
 )
 FetchContent_MakeAvailable(eigen)
-FetchContent_Declare(
-	types
-	GIT_REPOSITORY 	git@gitlab.com:bolderflight/software/types.git
-)
-FetchContent_MakeAvailable(types)
+#Fetch global defs
 FetchContent_Declare(
 	global_defs
 	GIT_REPOSITORY 	git@gitlab.com:bolderflight/software/global_defs.git
 )
 FetchContent_MakeAvailable(global_defs)
 # Add the library target
-add_library(nav INTERFACE)
-target_link_libraries(nav
-	INTERFACE
+add_library(navigation
+	src/navigation/ekf_15_state.cc
+	src/navigation/transforms.cc
+	src/navigation/tilt_compass.cc
+	src/navigation/utils.cc
+	include/navigation/constants.h
+	include/navigation/ekf_15_state.h
+	include/navigation/tilt_compass.h
+	include/navigation/transforms.h
+	include/navigation/utils.h
+)
+target_link_libraries(navigation
+	PUBLIC
 		eigen
-		types
 		global_defs
 )
 # Setup include directories 
-target_include_directories(nav INTERFACE include/)
+target_include_directories(navigation PUBLIC 
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>
+)
+
 # Example and unit testing if this project is built separately
 if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 	# Add the example target
@@ -45,33 +54,6 @@ if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 	# Link libraries to the test target
 	target_link_libraries(nav_example
 		PRIVATE 
-			nav
+			navigation
 	)
-# 	# Fetch google test
-# 	include(FetchContent)
-# 	FetchContent_Declare(
-# 		googletest
-# 		GIT_REPOSITORY 	https://github.com/google/googletest.git
-# 		GIT_TAG					release-1.10.0
-# 	)
-# 	FetchContent_MakeAvailable(googletest)
-# 	enable_testing()
-# 	include(GoogleTest)
-# 	# Add the test target
-# 	add_executable(types_test tests/types_test.cc)
-# 	# Add the includes
-# 	target_include_directories(types_test PUBLIC 
-# 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-# 		$<INSTALL_INTERFACE:include>
-# 	)
-# 	# Link libraries to the test target
-# 	target_link_libraries(types_test
-# 		PRIVATE 
-# 			types
-# 			gtest_main 
-# 			gtest
-# 			gmock
-# 	)
-# 	# Discover unit tests
-# 	gtest_discover_tests(types_test)
 endif()

@@ -68,6 +68,7 @@ class Ekf15State {
   inline float yaw_rad() {return ins_ypr_rad_(0);}
   inline float pitch_rad() {return ins_ypr_rad_(1);}
   inline float roll_rad() {return ins_ypr_rad_(2);}
+  inline Eigen::Vector3d lla_rad_m() {return ins_lla_rad_m_;}
   inline double lat_rad() {return ins_lla_rad_m_(0);}
   inline double lon_rad() {return ins_lla_rad_m_(1);}
   inline double alt_m() {return ins_lla_rad_m_(2);}

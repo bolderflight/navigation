@@ -11,6 +11,7 @@
 #include "navigation/constants.h"
 #include "Eigen/Core"
 #include "Eigen/Dense"
+#include "global_defs/global_defs.h"
 
 namespace navigation {
 /* Euler (3-2-1) to Direction Cosine Matrix (DCM) */
@@ -110,6 +111,27 @@ Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned, const Eigen::Vector3d &lla_
 Eigen::Vector3d lla2ned(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref);
 /* NED to LLA */
 Eigen::Vector3d ned2lla(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref);
+/* Converts a +/- 180 value to a 0 - 360 value */
+template<typename T>
+T Constrain2Pi(T ang) {
+  if (ang > global::constants::PI<T>) {
+    ang -= static_cast<T>(2) * global::constants::PI<T>;
+  }
+  if (ang < global::constants::PI<T>) {
+    ang += static_cast<T>(2) * global::constants::PI<T>;
+  }
+  return ang;
+}
+/* Converts a 0 - 360 value to a +/- 180 value */
+template<typename T>
+T ConstrainPi(T ang) {
+  ang = std::fmod(ang, static_cast<T>(2) * global::constants::PI<T>);
+  if (ang < static_cast<T>(0)) {
+    ang += static_cast<T>(2) * global::constants::PI<T>;
+  }
+  return ang;
+}
+
 }  // namespace navigation
 
 #endif  // INCLUDE_NAVIGATION_TRANSFORMS_H_

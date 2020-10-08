@@ -12,6 +12,20 @@
 #include <iomanip>
 
 int main() {
+  Eigen::Vector3d p0, p1, ref, l0, l1;
+
+  p0 = {-27.4215, -29.3987, -6.4839};
+  p1 = {151.360, 90.000, 18.309};
+  ref = {global::conversions::Deg_to_Rad(35.15049), global::conversions::Deg_to_Rad(-106.732339), global::conversions::Ft_to_M(5625.0)};
+  l0 = navigation::ned2lla(p0, ref);
+  l1 = navigation::ned2lla(p1, ref);
+  std::cout << std::setprecision(14) << l0(0) * 180.0 / M_PI << std::endl;
+  std::cout << std::setprecision(14) << l0(1) * 180.0 / M_PI << std::endl;
+  std::cout << std::setprecision(14) << l0(2) << std::endl;
+
+  std::cout << std::setprecision(14) << l1(0) * 180.0 / M_PI << std::endl;
+  std::cout << std::setprecision(14) << l1(1) * 180.0 / M_PI << std::endl;
+  std::cout << std::setprecision(14) << l1(2) << std::endl;
 
   // navigation::Ekf15State ekf;
   // types::Imu imu;

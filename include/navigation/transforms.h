@@ -114,10 +114,8 @@ Eigen::Vector3d ned2lla(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref);
 /* Converts a +/- 180 value to a 0 - 360 value */
 template<typename T>
 T Constrain2Pi(T ang) {
-  if (ang > global::constants::PI<T>) {
-    ang -= static_cast<T>(2) * global::constants::PI<T>;
-  }
-  if (ang < global::constants::PI<T>) {
+  ang = std::fmod(ang, static_cast<T>(2) * global::constants::PI<T>);
+  if (ang < static_cast<T>(0)) {
     ang += static_cast<T>(2) * global::constants::PI<T>;
   }
   return ang;
@@ -125,8 +123,10 @@ T Constrain2Pi(T ang) {
 /* Converts a 0 - 360 value to a +/- 180 value */
 template<typename T>
 T ConstrainPi(T ang) {
-  ang = std::fmod(ang, static_cast<T>(2) * global::constants::PI<T>);
-  if (ang < static_cast<T>(0)) {
+  if (ang > global::constants::PI<T>) {
+    ang -= static_cast<T>(2) * global::constants::PI<T>;
+  }
+  if (ang < -global::constants::PI<T>) {
     ang += static_cast<T>(2) * global::constants::PI<T>;
   }
   return ang;

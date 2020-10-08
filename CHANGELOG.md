@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.1
+- Fixed bugs with ConstrainPi and Constrain2Pi.
+
 ## v1.2.0
 - Added ConstrainPi and Constrain2Pi, which can convert angles to +/-Pi or 0-2Pi respectively.
 

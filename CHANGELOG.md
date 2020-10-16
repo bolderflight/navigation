@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.2
+- Updated to MIT license
+- Specified versions of dependencies
+
 ## v1.2.1
 - Fixed bugs with ConstrainPi and Constrain2Pi.
 

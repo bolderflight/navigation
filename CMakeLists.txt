@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Navigation
-  VERSION 1.2.1
+  VERSION 1.2.2
   DESCRIPTION "Navigation filters and utilities"
   LANGUAGES CXX
 )
@@ -17,6 +17,7 @@ FetchContent_MakeAvailable(eigen)
 FetchContent_Declare(
 	global_defs
 	GIT_REPOSITORY 	git@gitlab.com:bolderflight/software/global_defs.git
+	GIT_TAG v1.1.1
 )
 FetchContent_MakeAvailable(global_defs)
 # Add the library target

@@ -20,10 +20,10 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla) {
   double cos_lon = cos(lla(1));
   double sin_lon = sin(lla(1));
   double alt = lla(2);
-  double Rn = navigation::constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt(fabs(1.0 - (navigation::constants::E2 * sin_lat * sin_lat)));
+  double Rn = SEMI_MAJOR_AXIS_LENGTH_M / sqrt(fabs(1.0 - (E2 * sin_lat * sin_lat)));
   ecef(0) = (Rn + alt) * cos_lat * cos_lon;
   ecef(1) = (Rn + alt) * cos_lat * sin_lon;
-  ecef(2) = (Rn * (1.0 - navigation::constants::E2) + alt) * sin_lat;
+  ecef(2) = (Rn * (1.0 - E2) + alt) * sin_lat;
   return ecef;
 }
 /* ECEF to LLA, using Olson's method */
@@ -45,22 +45,22 @@ Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef) {
   lla(1) = atan2(y, x);
   s2 = z2 / r2;
   c2 = w2 / r2;
-  u = navigation::constants::A2 / r;
-  v = navigation::constants::A3 - navigation::constants::A4 / r;
+  u = A2 / r;
+  v = A3 - A4 / r;
   if (c2 > 0.3) {
-    s = (zp / r) * (1.0 + c2 * (navigation::constants::A1 + u + s2 * v) / r);
+    s = (zp / r) * (1.0 + c2 * (A1 + u + s2 * v) / r);
     lla(0) = asin(s);
     ss = s * s;
     c = sqrt(1.0 - ss);
   } else {
-    c = (w / r) * (1.0 - s2 * (navigation::constants::A5 - u - c2 * v) / r);
+    c = (w / r) * (1.0 - s2 * (A5 - u - c2 * v) / r);
     lla(0) = acos(c);
     ss = 1.0 - c * c;
     s = sqrt(ss);
   }
-  g = 1.0 - navigation::constants::E2 * ss;
-  rg = navigation::constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt(g);
-  rf = navigation::constants::A6 * rg;
+  g = 1.0 - E2 * ss;
+  rg = SEMI_MAJOR_AXIS_LENGTH_M / sqrt(g);
+  rf = A6 * rg;
   u = w - rg * c;
   v = zp - rf  * s;
   f = c * u + s * v;

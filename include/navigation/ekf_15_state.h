@@ -8,7 +8,7 @@
 #ifndef INCLUDE_NAVIGATION_EKF_15_STATE_H_
 #define INCLUDE_NAVIGATION_EKF_15_STATE_H_
 
-#include "global_defs/global_defs.h"
+#include "units/units.h"
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
@@ -146,7 +146,7 @@ class Ekf15State {
   * Constants
   */
   /* Graviational accel in NED */
-  Eigen::Vector3f GRAV_NED_MPS2_ = (Eigen::Vector3f() << 0.0f, 0.0f, global::constants::G_MPS2<float>).finished();
+  Eigen::Vector3f GRAV_NED_MPS2_ = (Eigen::Vector3f() << 0.0f, 0.0f, constants::G_MPS2<float>).finished();
   /*
   * Intermediates
   */

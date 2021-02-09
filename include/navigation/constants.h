@@ -9,7 +9,6 @@
 #define INCLUDE_NAVIGATION_CONSTANTS_H_
 
 namespace navigation {
-namespace constants {
 /* Semi-major axis, WGS-84 defined m */
 static constexpr double SEMI_MAJOR_AXIS_LENGTH_M = 6378137.0;
 /* Flattening, WGS-84 defined */
@@ -25,7 +24,6 @@ static constexpr double A3 = A1 * E2 / 2.0;
 static constexpr double A4 = 2.5 * A2;
 static constexpr double A5 = A1 + A3;
 static constexpr double A6 = 1.0 - E2;
-}  // namespace constants
 }  // namespace navigation
 
 #endif  // INCLUDE_NAVIGATION_CONSTANTS_H_

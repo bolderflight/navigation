@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Navigation
-  VERSION 1.2.3
+  VERSION 1.2.4
   DESCRIPTION "Navigation filters and utilities"
   LANGUAGES CXX
 )
@@ -9,17 +9,17 @@ include(FetchContent)
 # Fetch eigen
 FetchContent_Declare(
 	eigen
-	GIT_REPOSITORY 	https://gitlab.com/bolderflight/software/eigen.git
-	GIT_TAG					v1.0.0
+	GIT_REPOSITORY 	https://github.com/bolderflight/eigen.git
+	GIT_TAG	v1.0.0
 )
 FetchContent_MakeAvailable(eigen)
-#Fetch global defs
+#Fetch units
 FetchContent_Declare(
-	global_defs
-	GIT_REPOSITORY 	https://gitlab.com/bolderflight/software/global_defs.git
-	GIT_TAG v1.1.2
+	units
+	GIT_REPOSITORY 	https://github.com/bolderflight/units.git
+	GIT_TAG v2.0.0
 )
-FetchContent_MakeAvailable(global_defs)
+FetchContent_MakeAvailable(units)
 # Add the library target
 add_library(navigation
 	src/navigation/ekf_15_state.cc
@@ -35,7 +35,7 @@ add_library(navigation
 target_link_libraries(navigation
 	PUBLIC
 		eigen
-		global_defs
+		units
 )
 # Setup include directories 
 target_include_directories(navigation PUBLIC 

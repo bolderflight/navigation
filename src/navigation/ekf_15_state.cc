@@ -5,16 +5,16 @@
 * Copyright (c) 2020 Bolder Flight Systems
 */
 
+#include "navigation/constants.h"
 #include "navigation/ekf_15_state.h"
 #include "navigation/utils.h"
 #include "navigation/transforms.h"
 #include "navigation/tilt_compass.h"
-#include "global_defs/global_defs.h"
+#include "units/units.h"
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
 namespace navigation {
-
 /* Initialize the EKF states */
 void Ekf15State::Initialize(const Eigen::Vector3f &accel, const Eigen::Vector3f &gyro, const Eigen::Vector3f &mag, const Eigen::Vector3f &ned_vel, const Eigen::Vector3d &lla) {
   /* Observation matrix */
@@ -76,7 +76,7 @@ void Ekf15State::TimeUpdate(const Eigen::Vector3f &accel, const Eigen::Vector3f 
   ins_lla_rad_m_ += (dt_s * LlaRate(ins_ned_vel_mps_, ins_lla_rad_m_)).cast<double>();
   /* Jacobian */
   fs_.block(0, 3, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
-  fs_(5,2) = -2.0f * global::constants::G_MPS2<float> / constants::SEMI_MAJOR_AXIS_LENGTH_M;
+  fs_(5,2) = -2.0f * constants::G_MPS2<float> / SEMI_MAJOR_AXIS_LENGTH_M;
   fs_.block(3, 6, 3, 3) = -2.0f * t_b2ned * Skew(ins_accel_mps2_);
   fs_.block(3, 9, 3, 3) = -t_b2ned;
   fs_.block(6, 6, 3, 3) = -Skew(ins_gyro_radps_);
@@ -111,10 +111,10 @@ void Ekf15State::MeasurementUpdate(const Eigen::Vector3f &ned_vel, const Eigen::
   /* State update, x = K * y */
   x_ = k_ * y_;
   /* Position update */
-  double denom = fabs(1.0 - (constants::E2 * sin(ins_lla_rad_m_(0)) * sin(ins_lla_rad_m_(0))));
+  double denom = fabs(1.0 - (E2 * sin(ins_lla_rad_m_(0)) * sin(ins_lla_rad_m_(0))));
   double sqrt_denom = denom;
-  double Rns = constants::SEMI_MAJOR_AXIS_LENGTH_M * (1 - constants::E2) / (denom * sqrt_denom); 
-  double Rew = constants::SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;
+  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1 - E2) / (denom * sqrt_denom); 
+  double Rew = SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;
   ins_lla_rad_m_(2) -= x_(2);
   ins_lla_rad_m_(0) += x_(0) / (Rew + ins_lla_rad_m_(2));
   ins_lla_rad_m_(1) += x_(1) / (Rns + ins_lla_rad_m_(2)) / cos(ins_lla_rad_m_(0));

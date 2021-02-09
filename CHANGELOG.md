@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.4
+- Updated CONTRIBUTING
+- Switched dependencies to GitHub source
+- Moved navigation::constants to navigation
+
 ## v1.2.3
 - Updated CONTRIBUTING
 - Switched from ssh to https for *fetch_content*

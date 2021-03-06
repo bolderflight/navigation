@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.0
+- Updated namespace to *bfs*
+
 ## v1.2.4
 - Updated CONTRIBUTING
 - Switched dependencies to GitHub source

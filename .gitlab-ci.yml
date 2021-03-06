@@ -6,14 +6,14 @@ Lint:
   tags:
     - bfs
   script: 
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length include/navigation/constants.h
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length include/navigation/ekf_15_state.h
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length include/navigation/navigation.h
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length include/navigation/tilt_compass.h
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length include/navigation/transforms.h
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length include/navigation/utils.h
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length src/navigation/ekf_15_state.cc
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length src/navigation/tilt_compass.cc
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length src/navigation/transforms.cc
-    - cpplint.py --verbose=0 --filter=-whitespace,-line_length src/navigation/utils.cc
+    - cpplint --verbose=0 include/navigation/constants.h
+    - cpplint --verbose=0 include/navigation/ekf_15_state.h
+    - cpplint --verbose=0 include/navigation/navigation.h
+    - cpplint --verbose=0 include/navigation/tilt_compass.h
+    - cpplint --verbose=0 include/navigation/transforms.h
+    - cpplint --verbose=0 include/navigation/utils.h
+    - cpplint --verbose=0 src/navigation/ekf_15_state.cc
+    - cpplint --verbose=0 src/navigation/tilt_compass.cc
+    - cpplint --verbose=0 src/navigation/transforms.cc
+    - cpplint --verbose=0 src/navigation/utils.cc
   

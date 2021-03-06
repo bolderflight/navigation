@@ -2,7 +2,25 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2020 Bolder Flight Systems
+* Copyright (c) 2021 Bolder Flight Systems Inc
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the “Software”), to
+* deal in the Software without restriction, including without limitation the
+* rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+* sell copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+* IN THE SOFTWARE.
 */
 
 #include "navigation/transforms.h"
@@ -16,9 +34,9 @@ int main() {
 
   p0 = {-27.4215, -29.3987, -6.4839};
   p1 = {151.360, 90.000, 18.309};
-  ref = {conversions::Deg_to_Rad(35.15049), conversions::Deg_to_Rad(-106.732339), conversions::Ft_to_M(5625.0)};
-  l0 = navigation::ned2lla(p0, ref);
-  l1 = navigation::ned2lla(p1, ref);
+  ref = {bfs::deg2rad(35.15049), bfs::deg2rad(-106.732339), 2000.0};
+  l0 = bfs::ned2lla(p0, ref);
+  l1 = bfs::ned2lla(p1, ref);
   std::cout << std::setprecision(14) << l0(0) * 180.0 / M_PI << std::endl;
   std::cout << std::setprecision(14) << l0(1) * 180.0 / M_PI << std::endl;
   std::cout << std::setprecision(14) << l0(2) << std::endl;

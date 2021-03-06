@@ -2,7 +2,25 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2020 Bolder Flight Systems
+* Copyright (c) 2021 Bolder Flight Systems Inc
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the “Software”), to
+* deal in the Software without restriction, including without limitation the
+* rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+* sell copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+* IN THE SOFTWARE.
 */
 
 #include "navigation/transforms.h"
@@ -10,7 +28,7 @@
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
-namespace navigation {
+namespace bfs {
 
 /* LLA to ECEF */
 Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla) {
@@ -20,7 +38,8 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla) {
   double cos_lon = cos(lla(1));
   double sin_lon = sin(lla(1));
   double alt = lla(2);
-  double Rn = SEMI_MAJOR_AXIS_LENGTH_M / sqrt(fabs(1.0 - (E2 * sin_lat * sin_lat)));
+  double Rn = SEMI_MAJOR_AXIS_LENGTH_M /
+              sqrt(fabs(1.0 - (E2 * sin_lat * sin_lat)));
   ecef(0) = (Rn + alt) * cos_lat * cos_lon;
   ecef(1) = (Rn + alt) * cos_lat * sin_lon;
   ecef(2) = (Rn * (1.0 - E2) + alt) * sin_lat;
@@ -29,7 +48,8 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla) {
 /* ECEF to LLA, using Olson's method */
 Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef) {
   Eigen::Vector3d lla = Eigen::Vector3d::Zero();
-  static double x, y, z, zp, w2, w, z2, r2, r, s2, c2, u, v, s, ss, c, g, rg, rf, f, m, p;
+  static double x, y, z, zp, w2, w, z2, r2, r, s2, c2, u,
+                v, s, ss, c, g, rg, rf, f, m, p;
   x = ecef(0);
   y = ecef(1);
   z = ecef(2);
@@ -74,7 +94,8 @@ Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef) {
   return lla;
 }
 /* ECEF to NED */
-Eigen::Vector3d ecef2ned(const Eigen::Vector3d &ecef, const Eigen::Vector3d &lla_ref) {
+Eigen::Vector3d ecef2ned(const Eigen::Vector3d &ecef,
+                         const Eigen::Vector3d &lla_ref) {
   Eigen::Matrix3d R;
   R(0, 0) = -sin(lla_ref(0)) * cos(lla_ref(1));
   R(0, 1) = -sin(lla_ref(0)) * sin(lla_ref(1));
@@ -88,7 +109,8 @@ Eigen::Vector3d ecef2ned(const Eigen::Vector3d &ecef, const Eigen::Vector3d &lla
   return R * ecef;
 }
 /* NED to ECEF */
-Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned, const Eigen::Vector3d &lla_ref) {
+Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned,
+                         const Eigen::Vector3d &lla_ref) {
   Eigen::Matrix3d R;
   R(0, 0) = -sin(lla_ref(0)) * cos(lla_ref(1));
   R(0, 1) = -sin(lla_ref(0)) * sin(lla_ref(1));
@@ -102,17 +124,19 @@ Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned, const Eigen::Vector3d &lla_
   return R.transpose() * ned;
 }
 /* LLA to NED */
-Eigen::Vector3d lla2ned(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref) {
+Eigen::Vector3d lla2ned(const Eigen::Vector3d &loc,
+                        const Eigen::Vector3d &ref) {
   Eigen::Vector3d ecef_loc = lla2ecef(loc);
   Eigen::Vector3d ecef_ref = lla2ecef(ref);
   return ecef2ned(ecef_loc - ecef_ref, ref);
 }
 /* NED to LLA */
-Eigen::Vector3d ned2lla(const Eigen::Vector3d &loc, const Eigen::Vector3d &ref) {
+Eigen::Vector3d ned2lla(const Eigen::Vector3d &loc,
+                        const Eigen::Vector3d &ref) {
   Eigen::Vector3d ecef = ned2ecef(loc, ref);
   Eigen::Vector3d ecef_ref = lla2ecef(ref);
   ecef += ecef_ref;
   return ecef2lla(ecef);
 }
 
-}  // namespace navigation
+}  // namespace bfs

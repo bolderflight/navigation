@@ -2,7 +2,7 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2021 Bolder Flight Systems Inc
+* Copyright (c) 2022 Bolder Flight Systems Inc
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the “Software”), to
@@ -22,20 +22,27 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-#ifndef INCLUDE_NAVIGATION_TILT_COMPASS_H_
-#define INCLUDE_NAVIGATION_TILT_COMPASS_H_
 
-#include "Eigen/Core"
-#include "Eigen/Dense"
+#ifndef SRC_NAVIGATION_CONSTANTS_H_
+#define SRC_NAVIGATION_CONSTANTS_H_
 
 namespace bfs {
-/*
-* Yaw, pitch, and roll from 3-axis accelerometer and 
-* 3-axis magnetometer measurements
-*/
-Eigen::Vector3f TiltCompass(const Eigen::Vector3f &accel,
-                            const Eigen::Vector3f &mag);
-
+/* Semi-major axis, WGS-84 defined m */
+static constexpr double SEMI_MAJOR_AXIS_LENGTH_M = 6378137.0;
+/* Flattening, WGS-84 defined */
+static constexpr double FLATTENING = 1.0 / 298.257223563;
+/* Semi-minor axis, m (derived) */
+static constexpr double SEMI_MINOR_AXIS_LENGTH_M = SEMI_MAJOR_AXIS_LENGTH_M *
+                                                   (1.0 - FLATTENING);
+/* First eccentricity, squared (derived) */
+static constexpr double E2 = 2.0 * FLATTENING - FLATTENING * FLATTENING;
+/* Used for Olson's method */
+static constexpr double A1 = SEMI_MAJOR_AXIS_LENGTH_M * E2;
+static constexpr double A2 = A1 * A1;
+static constexpr double A3 = A1 * E2 / 2.0;
+static constexpr double A4 = 2.5 * A2;
+static constexpr double A5 = A1 + A3;
+static constexpr double A6 = 1.0 - E2;
 }  // namespace bfs
 
-#endif  // INCLUDE_NAVIGATION_TILT_COMPASS_H_
+#endif  // SRC_CONSTANTS_H_

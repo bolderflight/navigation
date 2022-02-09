@@ -22,27 +22,36 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
+#ifndef INCLUDE_NAVIGATION_TILT_COMPASS_H_
+#define INCLUDE_NAVIGATION_TILT_COMPASS_H_
 
-#include "navigation/utils.h"
-#include "navigation/constants.h"
-#include "Eigen/Core"
+#include "eigen.h"
 #include "Eigen/Dense"
 
 namespace bfs {
-/* Rate of change of LLA given NED velocity */
-Eigen::Vector3f LlaRate(const Eigen::Vector3f &ned_vel,
-                        const Eigen::Vector3d &lla) {
-  Eigen::Vector3f lla_dot;
-  double lat = lla(0);
-  double alt = lla(2);
-  double denom = fabs(1 - (E2 * sin(lat) * sin(lat)));
-  double sqrt_denom = denom;
-  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1 - E2) / (denom * sqrt_denom);
-  double Rew = SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;
-  lla_dot(0) = ned_vel(0) / (Rns + alt);
-  lla_dot(1) = ned_vel(1) / ((Rew + alt) * cos(lat));
-  lla_dot(2) = -ned_vel(2);
-  return lla_dot;
+/*
+* Yaw, pitch, and roll from 3-axis accelerometer and 
+* 3-axis magnetometer measurements
+*/
+Eigen::Vector3f TiltCompass(const Eigen::Vector3f &accel,
+                            const Eigen::Vector3f &mag) {
+  Eigen::Vector3f ypr;
+  Eigen::Vector3f a = accel;
+  Eigen::Vector3f m = mag;
+  /* Normalize accel and mag */
+  a.normalize();
+  m.normalize();
+  /* Pitch */
+  ypr(1) = std::asin(a(0));
+  /* Roll */
+  ypr(2) = std::asin(-a(1) / std::cos(ypr(1)));
+  /* Yaw */
+  ypr(0) = std::atan2(m(2) * std::sin(ypr(2)) - m(1) * std::cos(ypr(2)),
+           m(0) * std::cos(ypr(1)) + m(1) * std::sin(ypr(1)) * std::sin(ypr(2))
+           + m(2) * std::sin(ypr(1)) * std::cos(ypr(2)));
+  return ypr;
 }
 
 }  // namespace bfs
+
+#endif  // INCLUDE_NAVIGATION_TILT_COMPASS_H_

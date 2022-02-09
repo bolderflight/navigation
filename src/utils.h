@@ -23,26 +23,45 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef INCLUDE_NAVIGATION_CONSTANTS_H_
-#define INCLUDE_NAVIGATION_CONSTANTS_H_
+#ifndef NAVIGATION_SRC_UTILS_H_
+#define NAVIGATION_SRC_UTILS_H_
+
+#include "eigen.h"
+#include "Eigen/Dense"
 
 namespace bfs {
-/* Semi-major axis, WGS-84 defined m */
-static constexpr double SEMI_MAJOR_AXIS_LENGTH_M = 6378137.0;
-/* Flattening, WGS-84 defined */
-static constexpr double FLATTENING = 1.0 / 298.257223563;
-/* Semi-minor axis, m (derived) */
-static constexpr double SEMI_MINOR_AXIS_LENGTH_M = SEMI_MAJOR_AXIS_LENGTH_M *
-                                                   (1.0 - FLATTENING);
-/* First eccentricity, squared (derived) */
-static constexpr double E2 = 2.0 * FLATTENING - FLATTENING * FLATTENING;
-/* Used for Olson's method */
-static constexpr double A1 = SEMI_MAJOR_AXIS_LENGTH_M * E2;
-static constexpr double A2 = A1 * A1;
-static constexpr double A3 = A1 * E2 / 2.0;
-static constexpr double A4 = 2.5 * A2;
-static constexpr double A5 = A1 + A3;
-static constexpr double A6 = 1.0 - E2;
+/* Rate of change of LLH given NED velocity */
+Eigen::Vector3f LlhRate(const Eigen::Vector3f &ned_vel,
+                        const Eigen::Vector3d &llh) {
+  Eigen::Vector3f llh_dot;
+  double lat = llh(0);
+  double h = llh(2);
+  double denom = std::fabs(1.0 - (E2 * std::pow(std::sin(lat), 2.0)));
+  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1.0 - E2) /
+               denom * std::sqrt(denom);
+  double Rew = SEMI_MAJOR_AXIS_LENGTH_M / std::sqrt(denom);
+  llh_dot(0) = ned_vel(0) / (Rns + h);
+  llh_dot(1) = ned_vel(1) / ((Rew + h) * std::cos(lat));
+  llh_dot(2) = -ned_vel(2);
+  return llh_dot;
+}
+
+/* Skew symmetric matrix from a given vector w */
+template<typename T>
+Eigen::Matrix<T, 3, 3> Skew(const Eigen::Matrix<T, 3, 1> &w) {
+  Eigen::Matrix<T, 3, 3> c;
+  c(0, 0) =  0.0;
+  c(0, 1) = -w(2);
+  c(0, 2) =  w(1);
+  c(1, 0) =  w(2);
+  c(1, 1) =  0.0;
+  c(1, 2) = -w(0);
+  c(2, 0) = -w(1);
+  c(2, 1) =  w(0);
+  c(2, 2) =  0.0;
+  return c;
+}
+
 }  // namespace bfs
 
-#endif  // INCLUDE_NAVIGATION_CONSTANTS_H_
+#endif  // NAVIGATION_SRC_UTILS_H_

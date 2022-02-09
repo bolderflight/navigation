@@ -23,13 +23,11 @@
 * IN THE SOFTWARE.
 */
 
-#include "navigation/transforms.h"
-#include "navigation/constants.h"
-#include "navigation/ekf_15_state.h"
+#include "navigation.h"
 #include <iostream>
 #include <iomanip>
 
-int main() {
+void setup() {
   Eigen::Vector3d p0, p1, ref, l0, l1;
 
   p0 = {-27.4215, -29.3987, -6.4839};
@@ -37,13 +35,13 @@ int main() {
   ref = {bfs::deg2rad(35.15049), bfs::deg2rad(-106.732339), 2000.0};
   l0 = bfs::ned2lla(p0, ref);
   l1 = bfs::ned2lla(p1, ref);
-  std::cout << std::setprecision(14) << l0(0) * 180.0 / M_PI << std::endl;
-  std::cout << std::setprecision(14) << l0(1) * 180.0 / M_PI << std::endl;
-  std::cout << std::setprecision(14) << l0(2) << std::endl;
+  Serial.println(l0(0));
+  Serial.println(l0(1));
+  Serial.println(l0(2));
 
-  std::cout << std::setprecision(14) << l1(0) * 180.0 / M_PI << std::endl;
-  std::cout << std::setprecision(14) << l1(1) * 180.0 / M_PI << std::endl;
-  std::cout << std::setprecision(14) << l1(2) << std::endl;
+  // std::cout << std::setprecision(14) << l1(0) * 180.0 / M_PI << std::endl;
+  // std::cout << std::setprecision(14) << l1(1) * 180.0 / M_PI << std::endl;
+  // std::cout << std::setprecision(14) << l1(2) << std::endl;
 
   // navigation::Ekf15State ekf;
   // types::Imu imu;
@@ -103,3 +101,5 @@ int main() {
   // std::cout << q3.z() << std::endl << std::endl;
 
 }
+
+void loop() {}

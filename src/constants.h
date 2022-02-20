@@ -23,8 +23,8 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef SRC_NAVIGATION_CONSTANTS_H_
-#define SRC_NAVIGATION_CONSTANTS_H_
+#ifndef NAVIGATION_SRC_CONSTANTS_H_ // NOLINT
+#define NAVIGATION_SRC_CONSTANTS_H_
 
 namespace bfs {
 /* Semi-major axis, WGS-84 defined m */
@@ -45,4 +45,4 @@ static constexpr double A5 = A1 + A3;
 static constexpr double A6 = 1.0 - E2;
 }  // namespace bfs
 
-#endif  // SRC_CONSTANTS_H_
+#endif  // NAVIGATION_SRC_CONSTANTS_H_ NOLINT

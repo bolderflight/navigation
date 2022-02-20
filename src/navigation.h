@@ -2,7 +2,7 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2021 Bolder Flight Systems Inc
+* Copyright (c) 2022 Bolder Flight Systems Inc
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the “Software”), to
@@ -23,13 +23,13 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef SRC_NAVIGATION_H_
-#define SRC_NAVIGATION_H_
+#ifndef NAVIGATION_SRC_NAVIGATION_H_  // NOLINT
+#define NAVIGATION_SRC_NAVIGATION_H_
 
-#include "constants.h"
-#include "ekf_15_state.h"
-#include "tilt_compass.h"
-#include "transforms.h"
-#include "utils.h"
+#include "constants.h"  // NOLINT
+#include "ekf_15_state.h"  // NOLINT
+#include "tilt_compass.h"  // NOLINT
+#include "transforms.h"  // NOLINT
+#include "utils.h"  // NOLINT
 
-#endif  // SRC_NAVIGATION_H_
+#endif  // NAVIGATION_SRC_NAVIGATION_H_ NOLINT

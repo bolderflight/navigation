@@ -24,8 +24,6 @@
 */
 
 #include "navigation.h"
-#include <iostream>
-#include <iomanip>
 
 void setup() {
   Eigen::Vector3d p0, p1, ref, l0, l1;

@@ -2,8 +2,6 @@
 
 ## v3.0.0
 - Updated to work with CMake and Arduino build systems
-- Updated function names and arguments to match MATLAB
-- 
 
 ## v2.0.1
 - Updated to eigen v2.0.0 and units v3.2.0

@@ -23,15 +23,15 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef INCLUDE_NAVIGATION_EKF_15_STATE_H_
-#define INCLUDE_NAVIGATION_EKF_15_STATE_H_
+#ifndef NAVIGATION_SRC_EKF_15_STATE_H_  // NOLINT
+#define NAVIGATION_SRC_EKF_15_STATE_H_
 
-#include "constants.h"
-#include "transforms.h"
-#include "utils.h"
-#include "units.h"
-#include "tilt_compass.h"
-#include "eigen.h"
+#include "constants.h"  // NOLINT
+#include "transforms.h"  // NOLINT
+#include "utils.h"  // NOLINT
+#include "units.h"  // NOLINT
+#include "tilt_compass.h"  // NOLINT
+#include "eigen.h"  // NOLINT
 #include "Eigen/Dense"
 
 namespace bfs {
@@ -430,4 +430,4 @@ class Ekf15State {
 
 }  // namespace bfs
 
-#endif  // INCLUDE_NAVIGATION_EKF_15_STATE_H_
+#endif  // NAVIGATION_SRC_EKF_15_STATE_H_ NOLINT

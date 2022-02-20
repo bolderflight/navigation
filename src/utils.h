@@ -23,10 +23,10 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef NAVIGATION_SRC_UTILS_H_
+#ifndef NAVIGATION_SRC_UTILS_H_  // NOLINT
 #define NAVIGATION_SRC_UTILS_H_
 
-#include "eigen.h"
+#include "eigen.h"  // NOLINT
 #include "Eigen/Dense"
 
 namespace bfs {
@@ -64,4 +64,4 @@ Eigen::Matrix<T, 3, 3> Skew(const Eigen::Matrix<T, 3, 1> &w) {
 
 }  // namespace bfs
 
-#endif  // NAVIGATION_SRC_UTILS_H_
+#endif  // NAVIGATION_SRC_UTILS_H_ NOLINT

@@ -23,11 +23,11 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef INCLUDE_NAVIGATION_TRANSFORMS_H_
-#define INCLUDE_NAVIGATION_TRANSFORMS_H_
+#ifndef NAVIGATION_SRC_TRANSFORMS_H_  // NOLINT
+#define NAVIGATION_SRC_TRANSFORMS_H_
 
-#include "units.h"
-#include "eigen.h"
+#include "units.h"  // NOLINT
+#include "eigen.h"  // NOLINT
 #include "Eigen/Dense"
 
 namespace bfs {
@@ -274,4 +274,4 @@ T ConstrainPi(T ang) {
 
 }  // namespace bfs
 
-#endif  // INCLUDE_NAVIGATION_TRANSFORMS_H_
+#endif  // NAVIGATION_SRC_TRANSFORMS_H_ NOLINT

@@ -2,7 +2,7 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2021 Bolder Flight Systems Inc
+* Copyright (c) 2022 Bolder Flight Systems Inc
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the “Software”), to
@@ -22,10 +22,10 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-#ifndef INCLUDE_NAVIGATION_TILT_COMPASS_H_
-#define INCLUDE_NAVIGATION_TILT_COMPASS_H_
+#ifndef NAVIGATION_SRC_TILT_COMPASS_H_  // NOLINT
+#define NAVIGATION_SRC_TILT_COMPASS_H_
 
-#include "eigen.h"
+#include "eigen.h"  // NOLINT
 #include "Eigen/Dense"
 
 namespace bfs {
@@ -54,4 +54,4 @@ Eigen::Vector3f TiltCompass(const Eigen::Vector3f &accel,
 
 }  // namespace bfs
 
-#endif  // INCLUDE_NAVIGATION_TILT_COMPASS_H_
+#endif  // NAVIGATION_SRC_TILT_COMPASS_H_ NOLINT

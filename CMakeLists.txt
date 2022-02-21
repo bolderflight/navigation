@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Navigation
-  VERSION 3.0.0
+  VERSION 4.0.0
   DESCRIPTION "Navigation filters and utilities"
   LANGUAGES CXX
 )

@@ -1,4 +1,4 @@
-[![Pipeline](https://gitlab.com/bolderflight/software/navigation/badges/main/pipeline.svg)](https://gitlab.com/bolderflight/software/navigation/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Pipeline](https://gitlab.com/bolderflight/software/navigation/badges/main/pipeline.svg)](https://gitlab.com/bolderflight/software/navigation/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ![Bolder Flight Systems Logo](img/logo-words_75.png) &nbsp; &nbsp; ![Arduino Logo](img/arduino_logo_75.png)
 
@@ -56,6 +56,8 @@ The following constants are defined from WGS84:
 # Filters
 
 ## Tilt Compass
+
+**Eigen::Vector3f TiltCompass(const Eigen::Vector3f &accel, const Eigen::Vector3f &mag)** Estimates heading, pitch, and roll given 3-axis accelerometer and magnetometer data. Accelerometer and magnetometer data is expected to be oriented with the positive x-axis forward, y-axis out the right, and z-axis down. Heading, pitch, and roll are output in radians.
 
 ## 15 State EKF INS
 
@@ -220,6 +222,25 @@ q.z() = 0.0222526;
 q.w() = 0.822375;
 Eigen::Matrix3f dcm = bfs::quat2dcm(q);
 ```
+
+# Earth Modeling
+The following functions are converted from and tested against [NavPy](https://github.com/NavPy/NavPy). They compute the Earth's radius of curvature, LLA rate, Earth rotation rate resolved on a local NED frame, and the navigation rate.
+
+**double earthrad_transverse_m(const double lat, const AngPosUnit ang = AngPosUnit::DEG)** Computes the radius of curvature [m] in the prime-vertical (i.e. transverse or east-west) direction given a latitude and, optionally, the latitude unit. If the latitude unit is not specified, it is in degrees by default.
+
+**double earthrad_meridonal_m(const double lat, const AngPosUnit ang = AngPosUnit::DEG)** Computes the radius of curvature [m] in the meridonal (i.e. north-south) direction given a latitude and, optionally, the latitude unit. If the latitude unit is not specified, it is in degrees by default.
+
+**std::array<double, 2> earthrad_m(const double lat, const AngPosUnit ang = AngPosUnit::DEG)** Computes the radius of curvature in the transverse and meridonal directions, returning the result as an array.
+
+**Eigen::Vector3d llarate(const double vn, const double ve, const double vd, const double lat, const double alt, const AngPosUnit ang = AngPosUnit::DEG)** Computes the latitude, longitude, and altitude (LLA) rate given the locally tangent North-East-Down (NED) velocity [m/s] components, the latitude, altitude above the WGS84 ellipsoid [m], and, optionally, the latitude unit. If the latitude unit is not specified, it is in degrees by default. The latitude and longitude rate are given in deg/s if the latitude is given in degrees and rad/s if the latitude is given in radians.
+
+**Eigen::Vector3f llarate(const Eigen::Vector3f &ned_vel, const Eigen::Vector3d &lla, const AngPosUnit ang = AngPosUnit::DEG)** Same functionality as the previous llarate function, but uses vectors for NED velocity and LLA input.
+
+**Eigen::Vector3d earthrate(const double lat, const AngPosUnit ang = AngPosUnit::DEG)** Computes the Earth rotation rate resolved on the locally tangent North-East-Down (NED) frame, given a latitude and, optionally, the latitude unit. If the latitude unit is not specified, it is in degrees by default.
+
+**Eigen::Vector3d navrate(const double vn, const double ve, const double vd, const double lat, const double alt, const AngPosUnit ang = AngPosUnit::DEG)** Computes the navigation/transport rate  given the locally tangent North-East-Down (NED) velocity [m/s] components, the latitude, altitude above the WGS84 ellipsoid [m], and, optionally, the latitude unit. If the latitude unit is not specified, it is in degrees by default. The navigation/transport rate is the angular velocity of the NED frame relative to the earth ECEF frame. The navigation rate is given in deg/s if the latitude is given in degrees and rad/s if the latitude is given in radians.
+
+**Eigen::Vector3f navrate(const Eigen::Vector3f &ned_vel, const Eigen::Vector3d &lla, const AngPosUnit ang = AngPosUnit::DEG)** Same functionality as the previous navrate function, but uses vectors for NED velocity and LLA input.
 
 # Utilities
 

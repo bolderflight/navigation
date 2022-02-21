@@ -17,3 +17,9 @@ ned2lla	KEYWORD2
 WrapTo2Pi	KEYWORD2
 WrapToPi	KEYWORD2
 Skew	KEYWORD2
+earthrad_transverse_m	KEYWORD2
+earthrad_meridonal_m	KEYWORD2
+earthrad_m	KEYWORD2
+llarate	KEYWORD2
+earthrate	KEYWORD2
+navrate	KEYWORD2

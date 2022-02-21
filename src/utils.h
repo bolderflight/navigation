@@ -57,23 +57,6 @@ T WrapToPi(T ang) {
   return ang;
 }
 
-
-/* Rate of change of LLH given NED velocity */
-Eigen::Vector3f LlhRate(const Eigen::Vector3f &ned_vel,
-                        const Eigen::Vector3d &llh) {
-  Eigen::Vector3f llh_dot;
-  double lat = llh(0);
-  double h = llh(2);
-  double denom = std::fabs(1.0 - (ECC2 * std::pow(std::sin(lat), 2.0)));
-  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1.0 - ECC2) /
-               denom * std::sqrt(denom);
-  double Rew = SEMI_MAJOR_AXIS_LENGTH_M / std::sqrt(denom);
-  llh_dot(0) = ned_vel(0) / (Rns + h);
-  llh_dot(1) = ned_vel(1) / ((Rew + h) * std::cos(lat));
-  llh_dot(2) = -ned_vel(2);
-  return llh_dot;
-}
-
 /* Skew symmetric matrix from a given vector w */
 template<typename T>
 Eigen::Matrix<T, 3, 3> Skew(const Eigen::Matrix<T, 3, 1> &w) {

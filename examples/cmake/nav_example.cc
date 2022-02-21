@@ -29,8 +29,37 @@
 // #include <iomanip>
 
 int main() {
-  std::cout << bfs::BFS_PI<float> << std::endl;
-  std::cout << bfs::A1 << std::endl;
+  // std::cout << bfs::BFS_PI<float> << std::endl;
+  // std::cout << bfs::A1 << std::endl;
+Eigen::Matrix3f dcm;
+dcm << 0.4330,  0.2500, -0.8660,
+       0.1768,  0.9186,  0.3536,
+       0.8839, -0.3062,  0.3536;
+Eigen::Quaternionf q = bfs::dcm2quat(dcm);
+Eigen::Matrix3f dcm2 = bfs::quat2dcm(q);
+std::cout << q << std::endl;
+std::cout << dcm2 << std::endl;
+// std::cout << ang << std::endl;
+
+// float pitch = 0.8;
+// float roll = 0.7;
+// float yaw = 0.5;
+// // Eigen::Quaternionf q = bfs::angle2quat(yaw, pitch, roll);
+// // std::cout << q << std::endl;
+// // Eigen::Vector3f ang = bfs::quat2angle(q);
+// // std::cout << ang << std::endl;
+
+// Eigen::Quaternionf q;
+// q.x() = 0.215509;
+// q.y() = 0.432574;
+// q.z() = 0.0846792;
+// q.w() = 0.871358;
+// Eigen::Vector3f ang = bfs::quat2eul(q);
+// std::cout << ang << std::endl;
+
+// Eigen::Quaternionf q = {0.3, 0.1, 1, 0.5};
+// Eigen::Vector3f ang = bfs::quat2angle(q);
+// std::cout << ang << std::endl;
 
   // Eigen::Vector3d p0, p1, ref, l0, l1;
 

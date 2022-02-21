@@ -31,59 +31,86 @@
 #include "Eigen/Dense"
 
 namespace bfs {
-/* Euler (3-2-1) to Direction Cosine Matrix (DCM) */
+/* Convert rotation angles to direction cosine matrix */
 template<typename T>
-Eigen::Matrix<T, 3, 3> angle2dcm(const Eigen::Matrix<T, 3, 1> &eul) {
+Eigen::Matrix<T, 3, 3> angle2dcm(const T rot1, const T rot2, const T rot3,
+                                 const AngPosUnit ang = AngPosUnit::RAD) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
   Eigen::Matrix<T, 3, 3> dcm;
-  T psi = eul(0, 0);
-  T theta = eul(1, 0);
-  T phi = eul(2, 0);
-  T cos_theta = std::cos(theta);
-  T sin_theta = std::sin(theta);
-  T cos_phi = std::cos(phi);
-  T sin_phi = std::sin(phi);
-  T cos_psi = std::cos(psi);
-  T sin_psi = std::sin(psi);
-  dcm(0, 0) = cos_theta * cos_psi;
-  dcm(1, 0) = -cos_phi * sin_psi + sin_phi * sin_theta * cos_psi;
-  dcm(2, 0) = sin_phi * sin_psi + cos_phi * sin_theta * cos_psi;
-  dcm(0, 1) = cos_theta * sin_psi;
-  dcm(1, 1) = cos_phi * cos_psi + sin_phi * sin_theta * sin_psi;
-  dcm(2, 1) = -sin_phi * cos_psi + cos_phi * sin_theta * sin_psi;
-  dcm(0, 2) = -sin_theta;
-  dcm(1, 2) = sin_phi * cos_theta;
-  dcm(2, 2) = cos_phi * cos_theta;
+  T cos_rot1 = std::cos(convang(rot1, ang, AngPosUnit::RAD));
+  T sin_rot1 = std::sin(convang(rot1, ang, AngPosUnit::RAD));
+  T cos_rot2 = std::cos(convang(rot2, ang, AngPosUnit::RAD));
+  T sin_rot2 = std::sin(convang(rot2, ang, AngPosUnit::RAD));
+  T cos_rot3 = std::cos(convang(rot3, ang, AngPosUnit::RAD));
+  T sin_rot3 = std::sin(convang(rot3, ang, AngPosUnit::RAD));
+  dcm(0, 0) = cos_rot2 * cos_rot1;
+  dcm(1, 0) = -cos_rot3 * sin_rot1 + sin_rot3 * sin_rot2 * cos_rot1;
+  dcm(2, 0) = sin_rot3 * sin_rot1 + cos_rot3 * sin_rot2 * cos_rot1;
+  dcm(0, 1) = cos_rot2 * sin_rot1;
+  dcm(1, 1) = cos_rot3 * cos_rot1 + sin_rot3 * sin_rot2 * sin_rot1;
+  dcm(2, 1) = -sin_rot3 * cos_rot1 + cos_rot3 * sin_rot2 * sin_rot1;
+  dcm(0, 2) = -sin_rot2;
+  dcm(1, 2) = sin_rot3 * cos_rot2;
+  dcm(2, 2) = cos_rot3 * cos_rot2;
   return dcm;
 }
-/* Direction Cosine Matrix (DCM) to Euler (3-2-1) */
+/* Convert Euler angles to direction cosine matrix */
 template<typename T>
-Eigen::Matrix<T, 3, 1> dcm2angle(const Eigen::Matrix<T, 3, 3> &dcm) {
-  Eigen::Matrix<T, 3, 1> euler;
-  euler(0, 0) = std::atan2(dcm(0, 1), dcm(0, 0));
-  euler(1, 0) = -std::asin(dcm(0, 2));
-  euler(2, 0) = std::atan2(dcm(1, 2), dcm(2, 2));
-  return euler;
+Eigen::Matrix<T, 3, 3> eul2dcm(const Eigen::Matrix<T, 3, 1> &eul,
+                               const AngPosUnit ang = AngPosUnit::RAD) {
+  return angle2dcm(eul(0), eul(1), eul(2), ang);
 }
-/* Euler (3-2-1) to quaternion */
+/* Create rotation angles from direction cosine matrix*/
 template<typename T>
-Eigen::Quaternion<T> angle2quat(const Eigen::Matrix<T, 3, 1> &euler) {
-  T psi = euler(0, 0) / static_cast<T>(2);
-  T the = euler(1, 0) / static_cast<T>(2);
-  T phi = euler(2, 0) / static_cast<T>(2);
+Eigen::Matrix<T, 3, 1> dcm2angle(const Eigen::Matrix<T, 3, 3> &dcm,
+                                 const AngPosUnit ang = AngPosUnit::RAD) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
+  Eigen::Matrix<T, 3, 1> an;
+  an(0, 0) = convang(std::atan2(dcm(0, 1), dcm(0, 0)), AngPosUnit::RAD, ang);
+  an(1, 0) = convang(-std::asin(dcm(0, 2)), AngPosUnit::RAD, ang);
+  an(2, 0) = convang(std::atan2(dcm(1, 2), dcm(2, 2)), AngPosUnit::RAD, ang);
+  return an;
+}
+/* Create Euler angles from direction cosine matrix */
+template<typename T>
+Eigen::Matrix<T, 3, 1> dcm2eul(const Eigen::Matrix<T, 3, 3> &dcm,
+                               const AngPosUnit ang = AngPosUnit::RAD) {
+  return dcm2angle(dcm, ang);
+}
+/* Convert rotation angles to quaternion */
+template<typename T>
+Eigen::Quaternion<T> angle2quat(const T rot1, const T rot2, const T rot3,
+                                const AngPosUnit a = AngPosUnit::RAD) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
   Eigen::Quaternion<T> q;
-  q.w() = std::cos(psi) * std::cos(the) * std::cos(phi) + std::sin(psi) *
-          std::sin(the) * std::sin(phi);
-  q.x() = std::cos(psi) * std::cos(the) * std::sin(phi) - std::sin(psi) *
-          std::sin(the) * std::cos(phi);
-  q.y() = std::cos(psi) * std::sin(the) * std::cos(phi) + std::sin(psi) *
-          std::cos(the) * std::sin(phi);
-  q.z() = std::sin(psi) * std::cos(the) * std::cos(phi) - std::cos(psi) *
-          std::sin(the) * std::sin(phi);
+  T cos_rot1 = std::cos(convang(rot1 / static_cast<T>(2), a, AngPosUnit::RAD));
+  T sin_rot1 = std::sin(convang(rot1 / static_cast<T>(2), a, AngPosUnit::RAD));
+  T cos_rot2 = std::cos(convang(rot2 / static_cast<T>(2), a, AngPosUnit::RAD));
+  T sin_rot2 = std::sin(convang(rot2 / static_cast<T>(2), a, AngPosUnit::RAD));
+  T cos_rot3 = std::cos(convang(rot3 / static_cast<T>(2), a, AngPosUnit::RAD));
+  T sin_rot3 = std::sin(convang(rot3 / static_cast<T>(2), a, AngPosUnit::RAD));
+  q.w() = cos_rot1 * cos_rot2 * cos_rot3 + sin_rot1 * sin_rot2 * sin_rot3;
+  q.x() = cos_rot1 * cos_rot2 * sin_rot3 - sin_rot1 * sin_rot2 * cos_rot3;
+  q.y() = cos_rot1 * sin_rot2 * cos_rot3 + sin_rot1 * cos_rot2 * sin_rot3;
+  q.z() = sin_rot1 * cos_rot2 * cos_rot3 - cos_rot1 * sin_rot2 * sin_rot3;
   return q;
 }
-/* Quaternion to Euler (3-2-1) */
+/* Convert Euler angles to quaternion */
 template<typename T>
-Eigen::Matrix<T, 3, 1> quat2angle(const Eigen::Quaternion<T> &q) {
+Eigen::Quaternion<T> eul2quat(const Eigen::Matrix<T, 3, 1> &eul,
+                              const AngPosUnit a = AngPosUnit::RAD) {
+  return angle2quat(eul(0), eul(1), eul(2), a);
+}
+/* Convert quaternion to rotation angles */
+template<typename T>
+Eigen::Matrix<T, 3, 1> quat2angle(const Eigen::Quaternion<T> &q,
+                                  const AngPosUnit ang = AngPosUnit::RAD) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
+  Eigen::Matrix<T, 3, 1> angle;
   T m11 = static_cast<T>(2) * q.w() * q.w() + static_cast<T>(2) * q.x() *
           q.x() - static_cast<T>(1);
   T m12 = static_cast<T>(2) * q.x() * q.y() + static_cast<T>(2) * q.w() *
@@ -94,15 +121,23 @@ Eigen::Matrix<T, 3, 1> quat2angle(const Eigen::Quaternion<T> &q) {
           q.x();
   T m33 = static_cast<T>(2) * q.w() * q.w() + static_cast<T>(2) * q.z() *
           q.z() - static_cast<T>(1);
-  Eigen::Matrix<T, 3, 1> euler;
-  euler(0, 0) = atan2(m12, m11);
-  euler(1, 0) = asin(-m13);
-  euler(2, 0) = atan2(m23, m33);
-  return euler;
+  angle(0, 0) = convang(std::atan2(m12, m11), AngPosUnit::RAD, ang);
+  angle(1, 0) = convang(std::asin(-m13), AngPosUnit::RAD, ang);
+  angle(2, 0) = convang(std::atan2(m23, m33), AngPosUnit::RAD, ang);
+  return angle;
 }
-/* DCM to Quaternion */
+/* Convert quaternion to Euler angles */
+template<typename T>
+Eigen::Matrix<T, 3, 1> quat2eul(const Eigen::Quaternion<T> &q,
+                                const AngPosUnit ang = AngPosUnit::RAD) {
+  return quat2angle(q, ang);
+}
+
+/* Convert direction cosine matrix to quaternion */
 template<typename T>
 Eigen::Quaternion<T> dcm2quat(const Eigen::Matrix<T, 3, 3> &dcm) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
   Eigen::Quaternion<T> q;
   q.w() = static_cast<T>(0.5) * std::sqrt(static_cast<T>(1) + dcm(0, 0) +
           dcm(1, 1) + dcm(2, 2));
@@ -111,9 +146,11 @@ Eigen::Quaternion<T> dcm2quat(const Eigen::Matrix<T, 3, 3> &dcm) {
   q.z() = (dcm(0, 1) - dcm(1, 0)) / (static_cast<T>(4) * q.w());
   return q;
 }
-/* Quaternion to DCM */
+/* Convert quaternion to direction cosine matrix */
 template<typename T>
 Eigen::Matrix<T, 3, 3> quat2dcm(const Eigen::Quaternion<T> &q) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
   Eigen::Matrix<T, 3, 3> dcm;
   dcm(0, 0) = static_cast<T>(2) * q.w() * q.w() - static_cast<T>(1) +
               static_cast<T>(2) * q.x() * q.x();

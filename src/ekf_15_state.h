@@ -27,6 +27,7 @@
 #define NAVIGATION_SRC_EKF_15_STATE_H_
 
 #include "constants.h"  // NOLINT
+#include "earth_model.h"  // NOLINT
 #include "transforms.h"  // NOLINT
 #include "utils.h"  // NOLINT
 #include "units.h"  // NOLINT
@@ -193,7 +194,7 @@ class Ekf15State {
     /* Initialize pitch, roll, and heading */
     ins_ypr_rad_ = TiltCompass(accel, mag);
     /* Euler to quaternion */
-    quat_ = angle2quat(ins_ypr_rad_);
+    quat_ = eul2quat(ins_ypr_rad_);
   }
   /* Perform a time update */
   void TimeUpdate(const Eigen::Vector3f &accel, const Eigen::Vector3f &gyro,
@@ -219,7 +220,8 @@ class Ekf15State {
     ins_ned_vel_mps_ += dt_s * (t_b2ned * ins_accel_mps2_ + GRAV_NED_MPS2_);
     /* Position update */
     ins_lla_rad_m_ +=
-      (dt_s * LlhRate(ins_ned_vel_mps_, ins_lla_rad_m_)).cast<double>();
+      (dt_s * llarate(ins_ned_vel_mps_.cast<double>(),
+      ins_lla_rad_m_)).cast<double>();
     /* Jacobian */
     fs_.block(0, 3, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
     fs_(5, 2) = -2.0f * G_MPS2<float> / SEMI_MAJOR_AXIS_LENGTH_M;
@@ -260,10 +262,10 @@ class Ekf15State {
     /* State update, x = K * y */
     x_ = k_ * y_;
     /* Position update */
-    double denom = fabs(1.0 - (E2 * sin(ins_lla_rad_m_(0)) *
+    double denom = fabs(1.0 - (ECC2 * sin(ins_lla_rad_m_(0)) *
                   sin(ins_lla_rad_m_(0))));
     double sqrt_denom = denom;
-    double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1 - E2) /
+    double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1 - ECC2) /
                 (denom * sqrt_denom);
     double Rew = SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;
     ins_lla_rad_m_(2) -= x_(2);

@@ -30,20 +30,31 @@
 #include "Eigen/Dense"
 
 namespace bfs {
-/* Rate of change of LLH given NED velocity */
-Eigen::Vector3f LlhRate(const Eigen::Vector3f &ned_vel,
-                        const Eigen::Vector3d &llh) {
-  Eigen::Vector3f llh_dot;
-  double lat = llh(0);
-  double h = llh(2);
-  double denom = std::fabs(1.0 - (E2 * std::pow(std::sin(lat), 2.0)));
-  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1.0 - E2) /
-               denom * std::sqrt(denom);
-  double Rew = SEMI_MAJOR_AXIS_LENGTH_M / std::sqrt(denom);
-  llh_dot(0) = ned_vel(0) / (Rns + h);
-  llh_dot(1) = ned_vel(1) / ((Rew + h) * std::cos(lat));
-  llh_dot(2) = -ned_vel(2);
-  return llh_dot;
+
+/* Converts a +/- 180 value to a 0 - 360 value */
+template<typename T>
+T WrapTo2Pi(T ang) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
+  ang = std::fmod(ang, BFS_2PI<T>);
+  if (ang < static_cast<T>(0)) {
+    ang += BFS_2PI<T>;
+  }
+  return ang;
+}
+
+/* Converts a 0 - 360 value to a +/- 180 value */
+template<typename T>
+T WrapToPi(T ang) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
+  if (ang > BFS_PI<T>) {
+    ang -= BFS_2PI<T>;
+  }
+  if (ang < -BFS_PI<T>) {
+    ang += BFS_2PI<T>;
+  }
+  return ang;
 }
 
 /* Skew symmetric matrix from a given vector w */

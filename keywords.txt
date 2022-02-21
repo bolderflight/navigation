@@ -8,3 +8,9 @@ quat2angle	KEYWORD2
 quat2eul	KEYWORD2
 quat2dcm	KEYWORD2
 dcm2quat	KEYWORD2
+lla2ecef	KEYWORD2
+ecef2lla	KEYWORD2
+ecef2ned	KEYWORD2
+ned2ecef	KEYWORD2
+lla2ned	KEYWORD2
+ned2lla	KEYWORD2

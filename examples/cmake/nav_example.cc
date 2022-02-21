@@ -31,16 +31,46 @@
 int main() {
   // std::cout << bfs::BFS_PI<float> << std::endl;
   // std::cout << bfs::A1 << std::endl;
-Eigen::Matrix3f dcm;
-dcm << 0.4330,  0.2500, -0.8660,
-       0.1768,  0.9186,  0.3536,
-       0.8839, -0.3062,  0.3536;
-Eigen::Quaternionf q = bfs::dcm2quat(dcm);
-Eigen::Matrix3f dcm2 = bfs::quat2dcm(q);
-std::cout << q << std::endl;
-std::cout << dcm2 << std::endl;
-// std::cout << ang << std::endl;
+// Eigen::Matrix3f dcm;
+// dcm << 0.4330,  0.2500, -0.8660,
+//        0.1768,  0.9186,  0.3536,
+//        0.8839, -0.3062,  0.3536;
+// Eigen::Quaternionf q = bfs::dcm2quat(dcm);
+// Eigen::Matrix3f dcm2 = bfs::quat2dcm(q);
+// std::cout << q << std::endl;
+// std::cout << dcm2 << std::endl;
+// // std::cout << ang << std::endl;
+// Eigen::Vector3d lla = {0, 45, 1000};
+// Eigen::Vector3d ecef = bfs::lla2ecef(lla);
+// std::cout << ecef << std::endl;
 
+// Eigen::Vector3d ecef = {4510731, 4510731, 0};
+// Eigen::Vector3d lla = bfs::ecef2lla(ecef);
+// std::cout << lla << std::endl;
+
+// Eigen::Vector3d ecef = {4510731, 4510731, 4510731};
+// Eigen::Vector3d lla0 = {35, -105, 1000};
+// Eigen::Vector3d lla1 = {35, -105, 1000};
+// Eigen::Vector3d ecef = bfs::lla2ecef(lla1);
+// Eigen::Vector3d ned = bfs::ecef2ned(ecef, lla0);
+// std::cout << ned << std::endl;
+
+// Eigen::Vector3d lla0 = {46.017, 7.750, 1673};
+// Eigen::Vector3d lla = {45.976, 7.658, 4531};
+// Eigen::Vector3d ned = bfs::lla2ned(lla, lla0);
+// std::cout << ned << std::endl;
+
+Eigen::Vector3d lla0 = {46.017, 7.750, 1673};
+Eigen::Vector3d ned = {-4556.3, -7134.8, -2852.4};
+Eigen::Vector3d lla = bfs::ned2lla(ned, lla0);
+
+std::cout << lla << std::endl;
+
+// Eigen::Vector3d lla = {44.532, -72.782, 1699};
+// Eigen::Vector3d ecef = {1345.660, -4350.891, 4452.314};
+// ecef = ecef * 1000;
+// Eigen::Vector3d ned = bfs::ecef2ned(ecef, lla);
+// std::cout << ned << std::endl;
 // float pitch = 0.8;
 // float roll = 0.7;
 // float yaw = 0.5;

@@ -64,8 +64,8 @@ Eigen::Vector3f LlhRate(const Eigen::Vector3f &ned_vel,
   Eigen::Vector3f llh_dot;
   double lat = llh(0);
   double h = llh(2);
-  double denom = std::fabs(1.0 - (E2 * std::pow(std::sin(lat), 2.0)));
-  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1.0 - E2) /
+  double denom = std::fabs(1.0 - (ECC2 * std::pow(std::sin(lat), 2.0)));
+  double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1.0 - ECC2) /
                denom * std::sqrt(denom);
   double Rew = SEMI_MAJOR_AXIS_LENGTH_M / std::sqrt(denom);
   llh_dot(0) = ned_vel(0) / (Rns + h);

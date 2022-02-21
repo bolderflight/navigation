@@ -185,10 +185,10 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla,
   double sin_lon = std::sin(convang(lla(1), ang, AngPosUnit::RAD));
   double alt = lla(2);
   double Rn = SEMI_MAJOR_AXIS_LENGTH_M /
-              std::sqrt(std::fabs(1.0 - (E2 * sin_lat * sin_lat)));
+              std::sqrt(std::fabs(1.0 - (ECC2 * sin_lat * sin_lat)));
   ecef(0) = (Rn + alt) * cos_lat * cos_lon;
   ecef(1) = (Rn + alt) * cos_lat * sin_lon;
-  ecef(2) = (Rn * (1.0 - E2) + alt) * sin_lat;
+  ecef(2) = (Rn * (1.0 - ECC2) + alt) * sin_lat;
   return ecef;
 }
 
@@ -199,12 +199,12 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla,
 Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef,
                          const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d lla = Eigen::Vector3d::Zero();
-  static constexpr double A1 = SEMI_MAJOR_AXIS_LENGTH_M * E2;
+  static constexpr double A1 = SEMI_MAJOR_AXIS_LENGTH_M * ECC2;
   static constexpr double A2 = A1 * A1;
-  static constexpr double A3 = A1 * E2 / 2.0;
+  static constexpr double A3 = A1 * ECC2 / 2.0;
   static constexpr double A4 = 2.5 * A2;
   static constexpr double A5 = A1 + A3;
-  static constexpr double A6 = 1.0 - E2;
+  static constexpr double A6 = 1.0 - ECC2;
   static double x, y, z, zp, w2, w, z2, r2, r, s2, c2, u,
                 v, s, ss, c, g, rg, rf, f, m, p;
   x = ecef(0);
@@ -235,7 +235,7 @@ Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef,
     ss = 1.0 - c * c;
     s = std::sqrt(ss);
   }
-  g = 1.0 - E2 * ss;
+  g = 1.0 - ECC2 * ss;
   rg = SEMI_MAJOR_AXIS_LENGTH_M / std::sqrt(g);
   rf = A6 * rg;
   u = w - rg * c;

@@ -14,3 +14,5 @@ ecef2ned	KEYWORD2
 ned2ecef	KEYWORD2
 lla2ned	KEYWORD2
 ned2lla	KEYWORD2
+WrapTo2Pi	KEYWORD2
+WrapToPi	KEYWORD2

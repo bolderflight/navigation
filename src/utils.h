@@ -30,6 +30,34 @@
 #include "Eigen/Dense"
 
 namespace bfs {
+
+/* Converts a +/- 180 value to a 0 - 360 value */
+template<typename T>
+T WrapTo2Pi(T ang) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
+  ang = std::fmod(ang, BFS_2PI<T>);
+  if (ang < static_cast<T>(0)) {
+    ang += BFS_2PI<T>;
+  }
+  return ang;
+}
+
+/* Converts a 0 - 360 value to a +/- 180 value */
+template<typename T>
+T WrapToPi(T ang) {
+  static_assert(std::is_floating_point<T>::value,
+                "Only floating point types supported");
+  if (ang > BFS_PI<T>) {
+    ang -= BFS_2PI<T>;
+  }
+  if (ang < -BFS_PI<T>) {
+    ang += BFS_2PI<T>;
+  }
+  return ang;
+}
+
+
 /* Rate of change of LLH given NED velocity */
 Eigen::Vector3f LlhRate(const Eigen::Vector3f &ned_vel,
                         const Eigen::Vector3d &llh) {

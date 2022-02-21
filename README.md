@@ -21,6 +21,8 @@
 This library is within the namespace *bfs*.
 
 # Transformations
+
+## Position
 These functions convert between:
    * Latitude, longitude, and altitude above the WGS84 ellipsoid (LLA)
    * Earth Centered Earth Fixed (ECEF)
@@ -179,3 +181,9 @@ q.z() = 0.0222526;
 q.w() = 0.822375;
 Eigen::Matrix3f dcm = bfs::quat2dcm(q);
 ```
+
+# Utilities
+
+**T WrapTo2Pi(T ang)** Converts a +/-PI radian angle to a 0 to 2PI angle.
+
+**T WrapToPi(T ang)** Converts a 0 to 2PI radian angle to a +/-PI angle.

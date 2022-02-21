@@ -319,28 +319,6 @@ Eigen::Vector3d ned2lla(const Eigen::Vector3d &ned,
   return ecef2lla(loc + ref, ang);
 }
 
-/* Converts a +/- 180 value to a 0 - 360 value */
-template<typename T>
-T Constrain2Pi(T ang) {
-  ang = std::fmod(ang, BFS_2PI<T>);
-  if (ang < static_cast<T>(0)) {
-    ang += BFS_2PI<T>;
-  }
-  return ang;
-}
-
-/* Converts a 0 - 360 value to a +/- 180 value */
-template<typename T>
-T ConstrainPi(T ang) {
-  if (ang > BFS_PI<T>) {
-    ang -= BFS_2PI<T>;
-  }
-  if (ang < -BFS_PI<T>) {
-    ang += BFS_2PI<T>;
-  }
-  return ang;
-}
-
 }  // namespace bfs
 
 #endif  // NAVIGATION_SRC_TRANSFORMS_H_ NOLINT

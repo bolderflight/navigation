@@ -176,8 +176,8 @@ Eigen::Matrix<T, 3, 3> quat2dcm(const Eigen::Quaternion<T> &q) {
 /*
 * Convert geodetic coordinates to Earth-centered Earth-fixed (ECEF) coordinates
 */
-Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla,
-                         const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla,
+                                const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d ecef;
   double sin_lat = std::sin(convang(lla(0), ang, AngPosUnit::RAD));
   double cos_lat = std::cos(convang(lla(0), ang, AngPosUnit::RAD));
@@ -196,8 +196,8 @@ Eigen::Vector3d lla2ecef(const Eigen::Vector3d &lla,
 * Convert Earth-centered Earth-fixed (ECEF) coordinates to geodetic coordinates,
 * using Olson's method
 */
-Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef,
-                         const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef,
+                                const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d lla = Eigen::Vector3d::Zero();
   static constexpr double A1 = SEMI_MAJOR_AXIS_LENGTH_M * ECC2;
   static constexpr double A2 = A1 * A1;
@@ -257,9 +257,9 @@ Eigen::Vector3d ecef2lla(const Eigen::Vector3d &ecef,
 * Transform geocentric Earth-centered Earth-fixed coordinates to
 * local north-east-down
 */
-Eigen::Vector3d ecef2ned(const Eigen::Vector3d &ecef,
-                         const Eigen::Vector3d &lla0,
-                         const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d ecef2ned(const Eigen::Vector3d &ecef,
+                                const Eigen::Vector3d &lla0,
+                                const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Matrix3d R;
   double sin_lat = std::sin(convang(lla0(0), ang, AngPosUnit::RAD));
   double cos_lat = std::cos(convang(lla0(0), ang, AngPosUnit::RAD));
@@ -281,9 +281,9 @@ Eigen::Vector3d ecef2ned(const Eigen::Vector3d &ecef,
 * Transform a vector resolved in NED (origin given by lat_ref, lon_ref,
 * and alt_ref) coordinates to its ECEF representation.
 */
-Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned,
-                         const Eigen::Vector3d &lla0,
-                         const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned,
+                                const Eigen::Vector3d &lla0,
+                                const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Matrix3d R;
   double sin_lat = std::sin(convang(lla0(0), ang, AngPosUnit::RAD));
   double cos_lat = std::cos(convang(lla0(0), ang, AngPosUnit::RAD));
@@ -302,18 +302,18 @@ Eigen::Vector3d ned2ecef(const Eigen::Vector3d &ned,
 }
 
 /* Transform geodetic coordinates to local north-east-down coordinates */
-Eigen::Vector3d lla2ned(const Eigen::Vector3d &lla,
-                        const Eigen::Vector3d &lla0,
-                        const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d lla2ned(const Eigen::Vector3d &lla,
+                               const Eigen::Vector3d &lla0,
+                               const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d loc = lla2ecef(lla, ang);
   Eigen::Vector3d ref = lla2ecef(lla0, ang);
   return ecef2ned(loc - ref, lla0, ang);
 }
 
 /* Transform local north-east-down coordinates to geodetic coordinates */
-Eigen::Vector3d ned2lla(const Eigen::Vector3d &ned,
-                        const Eigen::Vector3d &lla0,
-                        const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d ned2lla(const Eigen::Vector3d &ned,
+                               const Eigen::Vector3d &lla0,
+                               const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d loc = ned2ecef(ned, lla0, ang);
   Eigen::Vector3d ref = lla2ecef(lla0, ang);
   return ecef2lla(loc + ref, ang);

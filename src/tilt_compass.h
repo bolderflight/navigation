@@ -33,8 +33,8 @@ namespace bfs {
 * Yaw, pitch, and roll from 3-axis accelerometer and 
 * 3-axis magnetometer measurements
 */
-Eigen::Vector3f TiltCompass(const Eigen::Vector3f &accel,
-                            const Eigen::Vector3f &mag) {
+inline Eigen::Vector3f TiltCompass(const Eigen::Vector3f &accel,
+                                   const Eigen::Vector3f &mag) {
   Eigen::Vector3f ypr;
   Eigen::Vector3f a = accel;
   Eigen::Vector3f m = mag;

@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.0.1
+- Fixed inline-ness of functions
+
 ## v4.0.0
 - Updated function signatures to match MATLAB
 - Added README

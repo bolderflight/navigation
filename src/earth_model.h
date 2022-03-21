@@ -56,14 +56,14 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef NAVIGATION_SRC_EARTH_MODEL_H_
+#ifndef NAVIGATION_SRC_EARTH_MODEL_H_  // NOLINT
 #define NAVIGATION_SRC_EARTH_MODEL_H_
 
 #include <cmath>
 #include <array>
-#include "units.h"
-#include "constants.h"
-#include "eigen.h"
+#include "units.h"  // NOLINT
+#include "constants.h"  // NOLINT
+#include "eigen.h"  // NOLINT
 #include "Eigen/Dense"
 
 namespace bfs {
@@ -72,8 +72,8 @@ namespace bfs {
 * Calculates the radius of curvature in the prime-vertical
 * (i.e. transverse or east-west) direction
 */
-double earthrad_transverse_m(const double lat,
-                             const AngPosUnit ang = AngPosUnit::DEG) {
+inline double earthrad_transverse_m(const double lat,
+                                    const AngPosUnit ang = AngPosUnit::DEG) {
   double rn = SEMI_MAJOR_AXIS_LENGTH_M / std::sqrt(1.0 - (ECC2 *
               std::pow(std::sin(convang(lat, ang, AngPosUnit::RAD)), 2.0)));
   return rn;
@@ -83,8 +83,8 @@ double earthrad_transverse_m(const double lat,
 * Calculates the radius of curvature in the meridonal (i.e. north-south)
 * direction
 */
-double earthrad_meridonal_m(const double lat,
-                            const AngPosUnit ang = AngPosUnit::DEG) {
+inline double earthrad_meridonal_m(const double lat,
+                                   const AngPosUnit ang = AngPosUnit::DEG) {
   double rm = SEMI_MAJOR_AXIS_LENGTH_M * (1.0 - ECC2) / std::pow(1.0 - ECC2 *
               std::pow(std::sin(convang(lat, ang, AngPosUnit::RAD)), 2.0),
               1.5);
@@ -94,8 +94,9 @@ double earthrad_meridonal_m(const double lat,
 /*
 * Calculates the radius of curvature in the transverse and meridonal directions
 */
-std::array<double, 2> earthrad_m(const double lat,
-                                 const AngPosUnit ang = AngPosUnit::DEG) {
+inline std::array<double, 2> earthrad_m(const double lat,
+                                        const AngPosUnit ang =
+                                        AngPosUnit::DEG) {
   std::array<double, 2> ret;
   ret[0] = earthrad_transverse_m(lat, ang);
   ret[1] = earthrad_meridonal_m(lat, ang);
@@ -105,9 +106,10 @@ std::array<double, 2> earthrad_m(const double lat,
 /*
 * Calculate Latitude, Longitude, Altitude Rate given locally tangent velocity
 */
-Eigen::Vector3d llarate(const double vn, const double ve, const double vd,
-                        const double lat, const double alt,
-                        const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d llarate(const double vn, const double ve,
+                               const double vd, const double lat,
+                               const double alt,
+                               const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d lla_dot;
   double Rns = earthrad_meridonal_m(lat, ang);
   double Rew = earthrad_transverse_m(lat, ang);
@@ -119,17 +121,17 @@ Eigen::Vector3d llarate(const double vn, const double ve, const double vd,
   return lla_dot;
 }
 
-Eigen::Vector3d llarate(const Eigen::Vector3d &ned_vel,
-                        const Eigen::Vector3d &lla,
-                        const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d llarate(const Eigen::Vector3d &ned_vel,
+                               const Eigen::Vector3d &lla,
+                               const AngPosUnit ang = AngPosUnit::DEG) {
   return llarate(ned_vel(0), ned_vel(1), ned_vel(2), lla(0), lla(2), ang);
 }
 
 /*
 * Calculate the earth rotation rate resolved on NED axis given lat
 */
-Eigen::Vector3d earthrate(const double lat,
-                          const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d earthrate(const double lat,
+                                 const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d w = Eigen::Vector3d::Zero();
   w(0) = convang(WE_RADPS * std::cos(convang(lat, ang, AngPosUnit::RAD)),
                  AngPosUnit::RAD, ang);
@@ -143,9 +145,10 @@ Eigen::Vector3d earthrate(const double lat,
 * Navigation/transport rate is the angular velocity of the NED frame relative
 * to the earth ECEF frame.
 */
-Eigen::Vector3d navrate(const double vn, const double ve, const double vd,
-                        const double lat, const double alt,
-                        const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d navrate(const double vn, const double ve,
+                               const double vd, const double lat,
+                               const double alt,
+                               const AngPosUnit ang = AngPosUnit::DEG) {
   Eigen::Vector3d w;
   double rew = earthrad_transverse_m(lat, ang);
   double rns = earthrad_meridonal_m(lat, ang);
@@ -156,12 +159,12 @@ Eigen::Vector3d navrate(const double vn, const double ve, const double vd,
   return w;
 }
 
-Eigen::Vector3d navrate(const Eigen::Vector3d &ned_vel,
-                        const Eigen::Vector3d &lla,
-                        const AngPosUnit ang = AngPosUnit::DEG) {
+inline Eigen::Vector3d navrate(const Eigen::Vector3d &ned_vel,
+                               const Eigen::Vector3d &lla,
+                               const AngPosUnit ang = AngPosUnit::DEG) {
   return navrate(ned_vel(0), ned_vel(1), ned_vel(2), lla(0), lla(2), ang);
 }
 
 }  // namespace bfs
 
-#endif  // NAVIGATION_SRC_EARTH_MODEL_H_
+#endif  // NAVIGATION_SRC_EARTH_MODEL_H_ NOLINT

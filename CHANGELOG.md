@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.2
+- Updated to eigen v3.0.2 and units v4.1.1
+
 ## v2.0.1
 - Updated to eigen v2.0.0 and units v3.2.0
 

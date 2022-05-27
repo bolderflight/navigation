@@ -28,7 +28,7 @@
 
 #include "Eigen/Core"
 #include "Eigen/Dense"
-#include "units/units.h"
+#include "units.h"  // NOLINT
 
 namespace bfs {
 /* Euler (3-2-1) to Direction Cosine Matrix (DCM) */

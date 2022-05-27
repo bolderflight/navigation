@@ -26,7 +26,7 @@
 #ifndef INCLUDE_NAVIGATION_EKF_15_STATE_H_
 #define INCLUDE_NAVIGATION_EKF_15_STATE_H_
 
-#include "units/units.h"
+#include "units.h"  // NOLINT
 #include "Eigen/Core"
 #include "Eigen/Dense"
 

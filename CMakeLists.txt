@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Navigation
-  VERSION 2.0.1
+  VERSION 2.0.2
   DESCRIPTION "Navigation filters and utilities"
   LANGUAGES CXX
 )
@@ -10,14 +10,14 @@ include(FetchContent)
 FetchContent_Declare(
 	eigen
 	GIT_REPOSITORY https://github.com/bolderflight/eigen.git
-	GIT_TAG	v2.0.0
+	GIT_TAG	v3.0.2
 )
 FetchContent_MakeAvailable(eigen)
 #Fetch units
 FetchContent_Declare(
 	units
 	GIT_REPOSITORY 	https://github.com/bolderflight/units.git
-	GIT_TAG v3.2.0
+	GIT_TAG v4.1.1
 )
 FetchContent_MakeAvailable(units)
 # Add the library target

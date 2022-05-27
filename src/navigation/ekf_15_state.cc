@@ -28,7 +28,7 @@
 #include "navigation/utils.h"
 #include "navigation/transforms.h"
 #include "navigation/tilt_compass.h"
-#include "units/units.h"
+#include "units.h"  // NOLINT
 #include "Eigen/Core"
 #include "Eigen/Dense"
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.0.2
+- Typo / bug in EKF15 state didn't take the sqrt of the denominator in the radius of curvature calc
+
 ## v4.0.1
 - Fixed inline-ness of functions
 

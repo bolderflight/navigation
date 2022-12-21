@@ -264,7 +264,7 @@ class Ekf15State {
     /* Position update */
     double denom = fabs(1.0 - (ECC2 * sin(ins_lla_rad_m_(0)) *
                   sin(ins_lla_rad_m_(0))));
-    double sqrt_denom = denom;
+    double sqrt_denom = std::sqrt(denom);
     double Rns = SEMI_MAJOR_AXIS_LENGTH_M * (1 - ECC2) /
                 (denom * sqrt_denom);
     double Rew = SEMI_MAJOR_AXIS_LENGTH_M / sqrt_denom;

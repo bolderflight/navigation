@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.3
+- Bug in EKF15 state where llarate and lla2ned were using the incorrect units.
+- Bug in the EKF15 state where the observation matrix wasn't using vertical velocity.
+
 ## v4.0.2
 - Typo / bug in EKF15 state didn't take the sqrt of the denominator in the radius of curvature calc
 

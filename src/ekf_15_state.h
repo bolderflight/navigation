@@ -2,7 +2,7 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2022 Bolder Flight Systems Inc
+* Copyright (c) 2026 Bolder Flight Systems Inc
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the “Software”), to
@@ -145,7 +145,7 @@ class Ekf15State {
                   const Eigen::Vector3f &mag, const Eigen::Vector3f &ned_vel,
                   const Eigen::Vector3d &lla) {
     /* Observation matrix */
-    h_.block(0, 0, 5, 5) = Eigen::Matrix<float, 5, 5>::Identity();
+    h_.block(0, 0, 6, 6) = Eigen::Matrix<float, 6, 6>::Identity();
     /* Process noise covariance */
     rw_.block(0, 0, 3, 3) = accel_std_mps2_ * accel_std_mps2_ *
                             Eigen::Matrix<float, 3, 3>::Identity();
@@ -221,7 +221,7 @@ class Ekf15State {
     /* Position update */
     ins_lla_rad_m_ +=
       (dt_s * llarate(ins_ned_vel_mps_.cast<double>(),
-      ins_lla_rad_m_)).cast<double>();
+      ins_lla_rad_m_, AngPosUnit::RAD)).cast<double>();
     /* Jacobian */
     fs_.block(0, 3, 3, 3) = Eigen::Matrix<float, 3, 3>::Identity();
     fs_(5, 2) = -2.0f * G_MPS2<float> / SEMI_MAJOR_AXIS_LENGTH_M;
@@ -249,7 +249,7 @@ class Ekf15State {
   void MeasurementUpdate(const Eigen::Vector3f &ned_vel,
                          const Eigen::Vector3d &lla) {
     /* Y, error between Measures and Outputs */
-    y_.segment(0, 3) = lla2ned(lla, ins_lla_rad_m_).cast<float>();
+    y_.segment(0, 3) = lla2ned(lla, ins_lla_rad_m_, AngPosUnit::RAD).cast<float>();
     y_.segment(3, 3) = ned_vel - ins_ned_vel_mps_;
     /* Innovation covariance */
     s_ = h_ * p_ * h_.transpose() + r_;
